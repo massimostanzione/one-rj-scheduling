@@ -38,7 +38,6 @@ public class DataDAO {
         }
 
         for (CSVRecord csvRecord : csvParser) {
-            //TODO doc id int per facilitare indicizzazione
             Job j = new Job(Integer.parseInt(csvRecord.get(CSV_HEADER_JOB_ID)),
                     Integer.parseInt(csvRecord.get(CSV_HEADER_RELEASE_DATE)),
                     Integer.parseInt(csvRecord.get(CSV_HEADER_PROCESSING_TIME))

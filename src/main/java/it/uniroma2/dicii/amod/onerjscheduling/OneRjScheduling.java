@@ -1,5 +1,4 @@
 package it.uniroma2.dicii.amod.onerjscheduling;
-// TODO cfr. pag. 132 dispensa univAQ: scelte implementative
 
 import it.uniroma2.dicii.amod.onerjscheduling.entities.OneRjProblem;
 import it.uniroma2.dicii.amod.onerjscheduling.io.CSVExporterPrinter;
