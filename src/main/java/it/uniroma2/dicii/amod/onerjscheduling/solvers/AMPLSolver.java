@@ -15,7 +15,6 @@ public abstract class AMPLSolver extends Solver {
 
     public AMPLSolver() {
         //TODO parametrizzare
-        //TODO specificare nella relazione che serve la libreria esterna (più i file annessi .so), come da guida
         this.initializeSolverParams();
     }
 
