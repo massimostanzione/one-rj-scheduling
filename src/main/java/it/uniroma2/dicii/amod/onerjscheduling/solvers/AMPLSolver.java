@@ -43,11 +43,11 @@ public abstract class AMPLSolver extends Solver {
             e.printStackTrace();
         } catch (RuntimeException e) {
             System.out.println("Timeout.");
+            this.ampl.close();
             return -1;
         } finally {
             // close all AMPL related resources here
-            //ampl.close();
-            //FIXME chiusura dell'istanza, gestire con nuova chiamata all'inizializzatore
+            this.ampl.close();
         }
         return solution;
     }
