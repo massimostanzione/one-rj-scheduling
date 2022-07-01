@@ -1,0 +1,4 @@
+data;
+
+#default, if not otherwise specified
+param	M	:=	1e5;
