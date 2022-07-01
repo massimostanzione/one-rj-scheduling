@@ -37,7 +37,6 @@ public class BnBFIFOSolver extends BnBSolver {
             // il nodo potrebbe già essere stato visitato se sto risalendo
             if (p.getStatus() == ProblemStatus.NOT_VISITED) {
                 p = this.examineProblem(p, rootBnBProblem);
-                //TODO serve final schedule?
                 if (!sch.scheduleInProblemListByFullInitSchedule(p.getFullInitialSchedule(), this.treeBranchProblems))
                     this.treeBranchProblems.add(p);
             }
