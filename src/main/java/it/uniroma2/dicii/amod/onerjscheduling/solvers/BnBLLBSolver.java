@@ -33,7 +33,6 @@ public class BnBLLBSolver extends BnBSolver {
             if (checkTimeout(start)) return -1;
             Integer min = Integer.MAX_VALUE;
             int res = -1;
-            //TODO gestire limite con thread
             for (BnBProblem p : this.openBnBProblems) {
                 p = this.examineProblem(p, rootBnBProblem);
                 res = p.getSolution();
