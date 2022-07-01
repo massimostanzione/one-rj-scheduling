@@ -5,6 +5,9 @@ data/
 # execution output
 output/
 
+# config.ini with custom parameters
+config.ini
+
 ### IntelliJ IDE
 .idea/
 

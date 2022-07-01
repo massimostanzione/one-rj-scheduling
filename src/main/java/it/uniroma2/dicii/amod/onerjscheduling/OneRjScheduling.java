@@ -34,7 +34,7 @@ public class OneRjScheduling {
         OneRjProblem problem = new OneRjProblem();
 
         // 1. Problem name (not mandatory)
-        problem.setName("fullExec5min-afterBigMSetting");
+        problem.setName("demo");
 
         // 2. Object function
         problem.setObjectFunction(ObjectFunctionEnum.SUM_COMPLETION_TIMES);
