@@ -96,7 +96,6 @@ public abstract class BnBSolver extends Solver {
                 //System.out.println("******** ammissibilità + ottimalità(soluz. migliore dell'incumbent): AGGIORNO L'INCUMBENT OTTIMO DA " + incumbent + " A " + res);
                 this.incumbent = res;
                 //il lb globale è mantenuto fermo, questo per il controllo seguente:
-                //FIXME qui non arrivo mai! provare con CSV con processi tutti uguali
                 if (this.incumbent == this.globLB) {
                     //System.out.println(">>> FINE: trovato OTTIMO (garantito) per il non-pmnt! AMMISSIBILITÀ e inoltre" + incumbent + " = " + globLB);
                     p.setStatus(ProblemStatus.OPTIMUM_REACHED);
