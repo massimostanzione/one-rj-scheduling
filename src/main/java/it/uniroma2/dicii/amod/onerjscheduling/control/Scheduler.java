@@ -49,7 +49,7 @@ public class Scheduler {
             nextEventInst = clock + remTime;
         }
         boolean pmnt = nextEventInst < (clock + remTime);
-        //TODO scrittura
+
         if (s.getItems().size() > 0 && next == s.getItems().get(s.getItems().size() - 1).getJob()) {
             s.getItems().get(s.getItems().size() - 1).setFinishTime(nextEventInst);
             s.getItems().get(s.getItems().size() - 1).setPreempted(pmnt);
