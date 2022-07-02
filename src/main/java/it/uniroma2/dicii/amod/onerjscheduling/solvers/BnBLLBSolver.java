@@ -11,7 +11,6 @@ import java.util.List;
 
 import static it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus.EXPANDED;
 
-//TODO gerarchia BnB
 public class BnBLLBSolver extends BnBSolver {
 
     @Override
