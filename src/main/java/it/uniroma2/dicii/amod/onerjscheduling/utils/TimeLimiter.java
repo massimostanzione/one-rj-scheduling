@@ -33,9 +33,8 @@ public class TimeLimiter implements Runnable {
     public void stop(Solver solver)  {
         exit = true;
         if(solver instanceof AMPLSolver){
-            //todo getAmpl()
-                solver.ampl.interrupt();
-                solver.ampl.close();
+                solver.getAmplInstance().interrupt();
+                solver.getAmplInstance().close();
                 solver.initializeSolverParams();
         }
     }

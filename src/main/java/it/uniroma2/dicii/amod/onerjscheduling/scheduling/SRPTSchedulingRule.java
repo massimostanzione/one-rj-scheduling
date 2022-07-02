@@ -46,7 +46,6 @@ public class SRPTSchedulingRule extends SchedulingRule {
         int eventIndex = 0;
         do {
             clock = events.get(eventIndex);
-            //TODO ev. astrarre secondo regola
             next = pickJob(jobList, clock, schedule);
             // potrei avere idle
             if (next != null) {
