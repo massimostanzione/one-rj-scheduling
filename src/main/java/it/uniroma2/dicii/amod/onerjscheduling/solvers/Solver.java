@@ -13,13 +13,17 @@ import java.time.Instant;
 
 // vale per 1|r_j|f
 public abstract class Solver {
-    public AMPL ampl;
+    public AMPL amplInstance;
     protected String path;
     protected SolverEnum name;
     ObjectFunction objFunction = null;
 
     public Solver() {
         this.setName();
+    }
+
+    public AMPL getAmplInstance() {
+        return amplInstance;
     }
 
     public ObjectFunction getObjFunction() {
@@ -94,5 +98,6 @@ public abstract class Solver {
     }
 
     public abstract void initializeSolverParams();
+
     protected abstract void printStats();
 }
