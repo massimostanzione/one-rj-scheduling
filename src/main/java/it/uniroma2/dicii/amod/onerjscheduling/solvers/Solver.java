@@ -1,19 +1,17 @@
 package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 
-import com.ampl.AMPL;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.ExecutionReportItem;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjFunctionFactory;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
-import it.uniroma2.dicii.amod.onerjscheduling.utils.TimeLimiter;
+import it.uniroma2.dicii.amod.onerjscheduling.utils.AMPLSolverTimeLimiter;
 
 import java.time.Duration;
 import java.time.Instant;
 
 // vale per 1|r_j|f
 public abstract class Solver {
-    public AMPL amplInstance;
     protected String path;
     protected SolverEnum name;
     ObjectFunction objFunction = null;
@@ -22,9 +20,6 @@ public abstract class Solver {
         this.setName();
     }
 
-    public AMPL getAmplInstance() {
-        return amplInstance;
-    }
 
     public ObjectFunction getObjFunction() {
         return objFunction;
@@ -73,9 +68,9 @@ public abstract class Solver {
         if (this instanceof AMPLSolver) {
             System.out.println("lancio thread AMPL");
             try {
-                TimeLimiter t1 = new TimeLimiter(this);
+                AMPLSolverTimeLimiter t1 = new AMPLSolverTimeLimiter((AMPLSolver) this);
                 ref.solution = t1.compute(this);
-                t1.stop(this);
+                t1.stop((AMPLSolver) this);
             } catch (Exception e) {
                 e.printStackTrace();
             }

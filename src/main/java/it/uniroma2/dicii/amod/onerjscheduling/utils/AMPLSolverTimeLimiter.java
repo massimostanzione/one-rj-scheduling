@@ -4,14 +4,14 @@ import it.uniroma2.dicii.amod.onerjscheduling.solvers.AMPLSolver;
 import it.uniroma2.dicii.amod.onerjscheduling.solvers.Solver;
 
 
-public class TimeLimiter implements Runnable {
+public class AMPLSolverTimeLimiter implements Runnable {
 
     Thread t;
     // to stop the thread
     private boolean exit;
-    private Solver solver;
+    private AMPLSolver solver;
 
-    public TimeLimiter(Solver solver) {
+    public AMPLSolverTimeLimiter(AMPLSolver solver) {
         t = new Thread(this);
         exit = false;
         this.solver=solver;
@@ -30,13 +30,11 @@ public class TimeLimiter implements Runnable {
         }
     }
 
-    public void stop(Solver solver)  {
+    public void stop(AMPLSolver solver)  {
         exit = true;
-        if(solver instanceof AMPLSolver){
                 solver.getAmplInstance().interrupt();
                 solver.getAmplInstance().close();
                 solver.initializeSolverParams();
-        }
     }
 
     public int compute(Solver solver) {

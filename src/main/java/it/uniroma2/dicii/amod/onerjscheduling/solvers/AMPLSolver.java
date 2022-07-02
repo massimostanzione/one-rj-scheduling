@@ -11,10 +11,12 @@ import java.nio.file.Path;
 import java.time.Instant;
 
 public abstract class AMPLSolver extends Solver {
-    //private AMPL ampl;
+    public AMPL amplInstance;
 
+    public AMPL getAmplInstance() {
+        return this.amplInstance;
+    }
     public AMPLSolver() {
-        //TODO parametrizzare
         this.initializeSolverParams();
     }
 
