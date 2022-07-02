@@ -11,6 +11,7 @@ public class DummySchedulingRule extends SchedulingRule {
 
     @Override
     public void initName() {
+        this.name = SchedulingRuleEnum.DUMMY;
     }
     @Override
     public Schedule execute(Schedule s, List<Job> jobList) {

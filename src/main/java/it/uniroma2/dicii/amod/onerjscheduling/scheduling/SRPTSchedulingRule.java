@@ -14,6 +14,7 @@ public class SRPTSchedulingRule extends SchedulingRule {
 
     @Override
     public void initName() {
+        this.name = SchedulingRuleEnum.RULE_SRPT;
     }
     @Override
     public Schedule execute(Schedule initialSchedule, List<Job> jobList) {
