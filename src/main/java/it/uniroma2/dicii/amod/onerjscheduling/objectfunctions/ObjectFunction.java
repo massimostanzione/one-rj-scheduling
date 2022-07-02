@@ -7,7 +7,6 @@ import it.uniroma2.dicii.amod.onerjscheduling.scheduling.SchedulingRule;
 import java.util.List;
 
 public abstract class ObjectFunction {
-    //TODO aggiungere parametro per AMPL?
     protected ObjectFunctionEnum name;
     protected String mathNotation;
     protected SchedulingRule relaxedProblemRule;
