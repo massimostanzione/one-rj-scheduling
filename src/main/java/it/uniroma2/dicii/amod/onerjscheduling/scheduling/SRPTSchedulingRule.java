@@ -81,7 +81,6 @@ public class SRPTSchedulingRule implements SchedulingRule {
     }
 
     private int getNextEventIndex(Integer clock, List<Integer> events) {
-        //TODO in altro modo?
         int index = -1;
         for (Integer event : events) {
             index++;
