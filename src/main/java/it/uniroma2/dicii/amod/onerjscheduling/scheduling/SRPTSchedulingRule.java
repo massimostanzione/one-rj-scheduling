@@ -11,7 +11,7 @@ import java.util.List;
 public class SRPTSchedulingRule implements SchedulingRule {
     @Override
     public Schedule execute(Schedule initialSchedule, List<Job> jobList) {
-        Scheduler sch=new Scheduler();//TODO singleton?
+        Scheduler sch = new Scheduler();//TODO singleton?
         int clock = initialSchedule.getCompletionTime();//initialSchedule.getItems().get(initialSchedule.getItems().size()-1).getFinishTime();//TODO in sovrastante?
         Job next = null;
         Schedule schedule = new Schedule();
@@ -45,7 +45,7 @@ public class SRPTSchedulingRule implements SchedulingRule {
             if (next != null) {
                 // ora che ho il prossimo da schedulare, lo faccio:
                 schedule = sch.schedulePmnt(schedule, clock, next, jobList, events);
-                ScheduleItem item=schedule.getItems().get(schedule.getItems().size()-1);
+                ScheduleItem item = schedule.getItems().get(schedule.getItems().size() - 1);
                 // aggiorno l'array degli eventi con l'istante di completamento
                 // del processo appena schedulato
                 // (la prossima esecuzione avrà clock pari ad esso)
@@ -105,8 +105,10 @@ public class SRPTSchedulingRule implements SchedulingRule {
         for (ScheduleItem i : s.getItems()) {
             if (i.getJob() == j) {
                 ret -= (i.getFinishTime() - i.getStartTime());
-                //TODO test ret>=0
             }
+        }
+        if (ret < 0) {
+            throw new RuntimeException("Negative remaining time, ret = " + ret);
         }
         return ret;
     }
