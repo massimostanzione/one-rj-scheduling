@@ -2,13 +2,19 @@ package it.uniroma2.dicii.amod.onerjscheduling.scheduling;
 
 import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Job;
+import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum;
+import it.uniroma2.dicii.amod.onerjscheduling.utils.SchedulingRuleEnum;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class SRPTSchedulingRule implements SchedulingRule {
+public class SRPTSchedulingRule extends SchedulingRule {
+
+    @Override
+    public void initName() {
+    }
     @Override
     public Schedule execute(Schedule initialSchedule, List<Job> jobList) {
         Scheduler sch = new Scheduler();//TODO singleton?

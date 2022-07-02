@@ -2,12 +2,16 @@ package it.uniroma2.dicii.amod.onerjscheduling.scheduling;
 
 import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Job;
+import it.uniroma2.dicii.amod.onerjscheduling.utils.SchedulingRuleEnum;
 
 import java.util.Comparator;
 import java.util.List;
 
-public class DummySchedulingRule implements SchedulingRule {
+public class DummySchedulingRule extends SchedulingRule {
 
+    @Override
+    public void initName() {
+    }
     @Override
     public Schedule execute(Schedule s, List<Job> jobList) {
         Scheduler sch = new Scheduler();//TODO singleton?
