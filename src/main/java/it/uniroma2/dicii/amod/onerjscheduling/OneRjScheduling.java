@@ -40,10 +40,10 @@ public class OneRjScheduling {
 
         // 3. Data instances
         problem.addInstance("./data/lect22.csv");
-      //     problem.addInstance("./data/lect22-reversed.csv");
-      //     problem.addInstance("./data/mortonPentico-ljb12-reduced.csv");
-      //     problem.addInstance("./data/mortonPentico-ljb12-smallPj.csv");
-      //     problem.addInstance("./data/mortonPentico-ljb12.csv");
+        //     problem.addInstance("./data/lect22-reversed.csv");
+        //     problem.addInstance("./data/mortonPentico-ljb12-reduced.csv");
+        //     problem.addInstance("./data/mortonPentico-ljb12-smallPj.csv");
+        //     problem.addInstance("./data/mortonPentico-ljb12.csv");
 
         // 4. Solvers
         problem.addOptimumSolver(new AMPLGurobiSolver());
@@ -92,7 +92,7 @@ public class OneRjScheduling {
                 System.out.println("-------------------------------------------------------");
             }
         }
-        String name = problem.getName() == null ? "" : "-" + problem.getName();
+        String name = problem.getName() == null ? "" : "-" + problem.getName() + "-";
         CSVExporterPrinter.getSingletonInstance().convertAndExport(problem.getResults(), "/output/report" + name + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")) + ".csv");
         System.out.println("Done.");
     }
