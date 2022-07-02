@@ -24,19 +24,15 @@ public class MortonPenticoInstanceConv {
         List<String[]> dataLines = new ArrayList<>();
         dataLines.add(new String[]{"JOB_ID", "RELEASE_DATE", "PROCESSING_TIME"});
         while ((myLine = bufRead.readLine()) != null) {
-
             pj = 0;
             String[] lineArr = myLine.split(" ");
             // salta la prima riga (intestazione)
             if (lineArr.length > 3) {
-                i++;//TODO ex-r20
+                i++;
                 // compute the total processing time
-                //TODO Integer.parseInt(lineArr[3])-4, 4 come param
                 for (int index = 5; index <= 8 + Integer.parseInt(lineArr[3])-4; index += 2) {
                     pj += Integer.parseInt(lineArr[index]);
                 }
-
-
                 dataLines.add(new String[]
                         {String.valueOf(i), lineArr[0], String.valueOf(pj)});
             }
