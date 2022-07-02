@@ -4,8 +4,8 @@ import it.uniroma2.dicii.amod.onerjscheduling.entities.ExecutionReportItem;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjFunctionFactory;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum;
-import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.AMPLSolverTimeLimiter;
+import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -85,9 +85,12 @@ public abstract class Solver {
             System.out.println("Timeout. Execution exceeded " + ExternalConfig.getSingletonInstance().getComputationTimeout() + " ms.\n");
         }
         item.setSolution(ref.solution);
-        // TODO se mantenere comunque indicazione del tempo quando va in timeout
-        //item.setTime(ref.solution == -1 ? -1 : Duration.between(start, end).toMillis());
-        item.setTime(Duration.between(start, end).toMillis());
+        if (ref.solution == -1)
+            item.setTime(ExternalConfig.getSingletonInstance().getShowElapsedTimeOnTimeout() ?
+                    Duration.between(start, end).toMillis() : -1);
+        else {
+            item.setTime(Duration.between(start, end).toMillis());
+        }
         printStats();
         return item;
     }
