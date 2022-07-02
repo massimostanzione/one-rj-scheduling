@@ -17,8 +17,8 @@ subject to CONSTR_RELEASE_TIME {j in jobs}:
     START_TIME[j]>=
     RELEASE_DATE[j];
     
-subject to CONSTR_COMPLETION_CONSISTENCY {j in jobs}:
-	COMPLETION_TIME[j]	>=
+subject to CONSTR_COMPLETION_DEFINITION {j in jobs}:
+	COMPLETION_TIME[j]	=
 	START_TIME[j]+PROCESSING_TIME[j];
 	
 subject to CONSTR_DISJUNCTIVE_1{j in jobs, k in jobs: j != k}:
