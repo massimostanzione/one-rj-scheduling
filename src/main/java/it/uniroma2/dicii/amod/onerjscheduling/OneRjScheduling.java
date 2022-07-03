@@ -9,6 +9,9 @@ import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+
+import static it.uniroma2.dicii.amod.onerjscheduling.utils.Consts.DEFAULT_AMPL_PATH;
 
 /**
  * Main access point for the program.
@@ -27,6 +30,11 @@ public class OneRjScheduling {
      * @see ObjectFunctionEnum
      */
     public static void main(String[] args) throws IOException {
+        if(Objects.equals(ExternalConfig.getSingletonInstance().getAmplPath(), DEFAULT_AMPL_PATH)){
+            System.out.println("Please initialize the constant AMPL_PATH in config.ini");
+            System.exit(1);
+        }
+
         System.out.println("Timeout set to " + ExternalConfig.getSingletonInstance().getComputationTimeout() + " ms.");
         System.out.println("Initializing problems and solvers...");
 
@@ -40,10 +48,11 @@ public class OneRjScheduling {
 
         // 3. Data instances
         problem.addInstance("./data/lect22.csv");
-        //     problem.addInstance("./data/lect22-reversed.csv");
-        //     problem.addInstance("./data/mortonPentico-ljb12-reduced.csv");
-        //     problem.addInstance("./data/mortonPentico-ljb12-smallPj.csv");
-        //     problem.addInstance("./data/mortonPentico-ljb12.csv");
+        problem.addInstance("./data/lect22-reversed.csv");
+        problem.addInstance("./data/10identical.csv");
+        problem.addInstance("./data/mortonPentico-ljb12-reduced.csv");
+        problem.addInstance("./data/mortonPentico-ljb12-smallPj.csv");
+        problem.addInstance("./data/mortonPentico-ljb12.csv");
 
         // 4. Solvers
         problem.addOptimumSolver(new AMPLGurobiSolver());
