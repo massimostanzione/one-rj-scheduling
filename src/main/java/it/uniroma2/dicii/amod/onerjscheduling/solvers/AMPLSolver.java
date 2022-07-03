@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 
 public abstract class AMPLSolver extends Solver {
-    public AMPL amplInstance;
+    private AMPL amplInstance;
 
     public AMPL getAmplInstance() {
         return this.amplInstance;
