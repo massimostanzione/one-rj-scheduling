@@ -118,7 +118,7 @@ public class BnBFIFOSolver extends BnBSolver {
     }
 
     @Override
-    public void setName() {
+    protected void setName() {
         this.name = SolverEnum.BRANCH_AND_BOUND_FIFO;
     }
 }

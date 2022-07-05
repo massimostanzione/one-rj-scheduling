@@ -7,7 +7,8 @@ public class AMPLGurobiSolver extends AMPLSolver {
     }
 
     @Override
-    public void setName() {
+    protected void setName() {
         this.name = SolverEnum.AMPL_GUROBI;
     }
+
 }

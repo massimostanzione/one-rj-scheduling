@@ -6,7 +6,7 @@ public class BnBFullSolver extends BnBNonBackwardSolver {
     }
 
     @Override
-    public void setName() {
+    protected void setName() {
         this.name = SolverEnum.BRANCH_AND_BOUND_FULL;
     }
 }

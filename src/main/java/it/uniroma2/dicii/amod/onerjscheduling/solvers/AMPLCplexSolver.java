@@ -7,7 +7,7 @@ public class AMPLCplexSolver extends AMPLSolver {
     }
 
     @Override
-    public void setName() {
+    protected void setName() {
         this.name = SolverEnum.AMPL_CPLEX;
     }
 }

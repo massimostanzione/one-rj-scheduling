@@ -38,7 +38,7 @@ public abstract class Solver {
         return name;
     }
 
-    public abstract void setName();
+    protected abstract void setName();
 
     public String getPath() {
         return path;
