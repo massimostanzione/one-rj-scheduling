@@ -3,6 +3,7 @@ package it.uniroma2.dicii.amod.onerjscheduling.entities;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum;
 import it.uniroma2.dicii.amod.onerjscheduling.solvers.Solver;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,5 +76,16 @@ public class OneRjProblem {
 
     public void setResults(List<ExecutionReportItem> results) {
         this.results = results;
+    }
+
+    public void loadDirectory(String path) {
+        File folder = new File(path);
+        File[] listOfFiles = folder.listFiles();
+
+        for (int i = 0; i < listOfFiles.length; i++) {
+this.addInstance(listOfFiles[i].toString());
+
+        }
+
     }
 }

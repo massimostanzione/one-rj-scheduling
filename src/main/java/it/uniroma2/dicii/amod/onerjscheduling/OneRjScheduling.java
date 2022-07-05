@@ -41,19 +41,19 @@ public class OneRjScheduling {
         OneRjProblem problem = new OneRjProblem();
 
         // 1. Problem name (not mandatory)
-        problem.setName("demo");
+        problem.setName("generatedInstances");
 
         // 2. Object function
         problem.setObjectFunction(ObjectFunctionEnum.SUM_COMPLETION_TIMES);
 
         // 3. Data instances
-        problem.addInstance("./data/lect22.csv");
+  /*      problem.addInstance("./data/lect22.csv");
         problem.addInstance("./data/lect22-reversed.csv");
         problem.addInstance("./data/10identical.csv");
         problem.addInstance("./data/mortonPentico-ljb12-reduced.csv");
         problem.addInstance("./data/mortonPentico-ljb12-smallPj.csv");
-        problem.addInstance("./data/mortonPentico-ljb12.csv");
-
+        problem.addInstance("./data/mortonPentico-ljb12.csv");*/
+problem.loadDirectory("./data/instances/generated/");
         // 4. Solvers
         problem.addOptimumSolver(new AMPLGurobiSolver());
         problem.addOptimumSolver(new AMPLCplexSolver());

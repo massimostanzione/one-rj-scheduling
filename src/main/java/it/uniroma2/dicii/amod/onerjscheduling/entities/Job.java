@@ -1,9 +1,13 @@
 package it.uniroma2.dicii.amod.onerjscheduling.entities;
 
-public class Job {
-    private int id;
-    private int releaseDate;
-    private int processingTime;
+import it.uniroma2.dicii.amod.onerjscheduling.utils.ExportableAsDatasetRecord;
+
+import java.util.List;
+
+public class Job extends ExportableAsDatasetRecord {
+    private final int id;
+    private final int releaseDate;
+    private final int processingTime;
 
     public Job(int id, int releaseDate, int processingTime) {
         this.id = id;
@@ -28,5 +32,17 @@ public class Job {
         return "Job{" +
                 "id=" + id +
                 '}';
+    }
+
+    @Override
+    public List<List<String>> getDatasetAttributes() {
+        this.setDatasetAttributes("JOB_ID", "RELEASE_DATE", "PROCESSING_TIME");
+        return this.datasetAttributes;
+    }
+
+    @Override
+    public List<List<String>> getDatasetRecord() {
+        this.setDatasetRecord(this.id, this.releaseDate, this.processingTime);
+        return this.datasetRecord;
     }
 }
