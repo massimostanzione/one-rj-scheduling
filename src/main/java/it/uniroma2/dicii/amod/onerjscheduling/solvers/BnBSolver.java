@@ -62,6 +62,7 @@ public abstract class BnBSolver extends Solver {
     }
 
     public void initializeSolverParams() {
+        //TODO spostare dalle classi sottostanti
     }
 
     protected void updateStatuses(ProblemStatus status) {

@@ -17,7 +17,7 @@ public abstract class Solver {
     ObjectFunction objFunction = null;
 
     public Solver() {
-        this.setName();
+        this.name=this.initName();
     }
 
 
@@ -34,11 +34,8 @@ public abstract class Solver {
         }
     }
 
-    public SolverEnum getName() {
-        return name;
-    }
+    public abstract SolverEnum initName();
 
-    protected abstract void setName();
 
     public String getPath() {
         return path;
@@ -65,7 +62,8 @@ public abstract class Solver {
             int solution = -1;
         };
         Instant start = Instant.now();
-        if (this instanceof AMPLSolver) {
+        // no more need of the AMPLSolverTimeLimiter thread!
+       /* if (this instanceof AMPLSolver) {
             System.out.println("lancio thread AMPL");
             try {
                 AMPLSolverTimeLimiter t1 = new AMPLSolverTimeLimiter((AMPLSolver) this);
@@ -75,9 +73,9 @@ public abstract class Solver {
                 e.printStackTrace();
             }
 
-        } else {
+        } else {*/
             ref.solution = this.solveExecutive(start);
-        }
+        //}
 
         Instant end = Instant.now();
 

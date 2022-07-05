@@ -7,7 +7,7 @@ public class BnBForwardSolver extends BnBNonBackwardSolver {
     }
 
     @Override
-    protected void setName() {
-        this.name = SolverEnum.BRANCH_AND_BOUND_FORWARD;
+    public SolverEnum initName() {
+        return SolverEnum.BRANCH_AND_BOUND_FORWARD;
     }
 }

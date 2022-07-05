@@ -14,6 +14,11 @@ import static it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus.EXPANDE
 public class BnBLLBSolver extends BnBSolver {
 
     @Override
+    public SolverEnum initName() {
+        return SolverEnum.BRANCH_AND_BOUND_LLB;
+    }
+
+    @Override
     public int solveExecutive(Instant start) {
         this.openBnBProblems = new ArrayList<>();
         this.incumbent = Integer.MAX_VALUE;
@@ -29,7 +34,7 @@ public class BnBLLBSolver extends BnBSolver {
 
         // QUI GUARDO LA LISTA COME LIVELLO
         while (this.openBnBProblems.size() > 0) {
-            if (checkTimeout(start)) return -1;
+            if (checkTimeout(start)) return this.incumbent;
             Integer min = Integer.MAX_VALUE;
             int res = -1;
             for (BnBProblem p : this.openBnBProblems) {
@@ -59,8 +64,5 @@ public class BnBLLBSolver extends BnBSolver {
         return this.incumbent;
     }
 
-    @Override
-    protected void setName() {
-        this.name = SolverEnum.BRANCH_AND_BOUND_LLB;
-    }
+
 }

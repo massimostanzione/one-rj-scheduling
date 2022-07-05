@@ -31,7 +31,7 @@ public class BnBFIFOSolver extends BnBSolver {
         this.treeBranchProblems = new ArrayList<>();
         this.treeBranchProblems.add(rootBnBProblem);
         while (this.openBnBProblems.size() > 0) {
-            if (checkTimeout(start)) return -1;
+            if (checkTimeout(start)) return this.incumbent;
             BnBProblem p = this.openBnBProblems.get(0);
             this.openBnBProblems.remove(p);
             // il nodo potrebbe già essere stato visitato se sto risalendo
@@ -118,7 +118,7 @@ public class BnBFIFOSolver extends BnBSolver {
     }
 
     @Override
-    protected void setName() {
-        this.name = SolverEnum.BRANCH_AND_BOUND_FIFO;
+    public SolverEnum initName() {
+        return SolverEnum.BRANCH_AND_BOUND_FIFO;
     }
 }

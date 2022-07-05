@@ -22,7 +22,7 @@ public abstract class BnBNonBackwardSolver extends BnBSolver {
         this.openBnBProblems.add(rootBnBProblem);
 
         while (this.openBnBProblems.size() > 0) {
-            if (checkTimeout(start)) return -1;
+            if (checkTimeout(start)) return this.incumbent;
             BnBProblem p = this.openBnBProblems.get(0);
             this.openBnBProblems.remove(p);
             p = examineProblem(p, rootBnBProblem);

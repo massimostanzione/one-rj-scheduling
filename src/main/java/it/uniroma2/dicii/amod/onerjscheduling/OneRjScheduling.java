@@ -41,13 +41,13 @@ public class OneRjScheduling {
         OneRjProblem problem = new OneRjProblem();
 
         // 1. Problem name (not mandatory)
-        problem.setName("generatedInstances");
+        problem.setName("generatedInstances-testTimeout");
 
         // 2. Object function
         problem.setObjectFunction(ObjectFunctionEnum.SUM_COMPLETION_TIMES);
 
         // 3. Data instances
-  /*      problem.addInstance("./data/lect22.csv");
+    /*    problem.addInstance("./data/lect22.csv");
         problem.addInstance("./data/lect22-reversed.csv");
         problem.addInstance("./data/10identical.csv");
         problem.addInstance("./data/mortonPentico-ljb12-reduced.csv");
@@ -80,7 +80,7 @@ problem.loadDirectory("./data/instances/generated/");
                 System.out.println("Solving\n"
                         + "\tProblem:\t1|r_j|" + solver.getObjFunction().getMathNotation() + "\n"
                         + "\tInstance:\t" + solver.getPath() + "\n"
-                        + "\tSolver:\t\t" + solver.getName() + "\n"
+                        + "\tSolver:\t\t" + solver.initName() + "\n"
                         + "It may take a while, please wait...\n");
                 problem.getResults().add(solver.solve());
                 System.out.println("Solution:\t\t" + problem.getResults().get(problem.getResults().size() - 1).getSolution());
@@ -93,7 +93,7 @@ problem.loadDirectory("./data/instances/generated/");
                 System.out.println("Determining lower bound for the previous problem via preemtive relaxation\n"
                         + "\tProblem:\t1|r_j, pmnt|" + solver.getObjFunction().getMathNotation() + "\n"
                         + "\tInstance:\t" + solver.getPath() + "\n"
-                        + "\tSolver:\t\t" + solver.getName() + "\n"
+                        + "\tSolver:\t\t" + solver.initName() + "\n"
                         + "It may take a while, please wait...\n");
                 problem.getResults().add(solver.solve());
                 System.out.println("Solution:\t\t" + problem.getResults().get(problem.getResults().size() - 1).getSolution());

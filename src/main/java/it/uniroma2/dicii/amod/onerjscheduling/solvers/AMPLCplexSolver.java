@@ -1,13 +1,25 @@
 package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 
+import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
+
 public class AMPLCplexSolver extends AMPLSolver {
     @Override
-    protected String getAMPLImplSolver() {
+    protected String initSpecificSolverOptionsPrefix() {
+        return "cplex_options";
+    }
+
+    @Override
+    protected String initSpecificSolverOptions() {
+        return "time="+ ExternalConfig.getSingletonInstance().getComputationTimeout()/1000;
+    }
+
+    @Override
+    protected String initAMPLImplSolverName() {
         return "cplex";
     }
 
     @Override
-    protected void setName() {
-        this.name = SolverEnum.AMPL_CPLEX;
+    public SolverEnum initName() {
+        return SolverEnum.AMPL_CPLEX;
     }
 }

@@ -1,14 +1,27 @@
 package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 
+import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
+
+import java.time.Instant;
+import java.util.Map;
+
 public class AMPLGurobiSolver extends AMPLSolver {
     @Override
-    protected String getAMPLImplSolver() {
+    protected String initAMPLImplSolverName() {
         return "gurobi";
     }
 
     @Override
-    protected void setName() {
-        this.name = SolverEnum.AMPL_GUROBI;
+    public SolverEnum initName() {
+        return SolverEnum.AMPL_GUROBI;
     }
 
+    @Override
+    public String initSpecificSolverOptionsPrefix(){
+        return "gurobi_options";
+    }
+    @Override
+    public String initSpecificSolverOptions(){
+        return "timelim="+ ExternalConfig.getSingletonInstance().getComputationTimeout()/1000;
+    }
 }

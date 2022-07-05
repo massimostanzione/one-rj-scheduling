@@ -9,16 +9,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.Map;
 
 public abstract class AMPLSolver extends Solver {
     private AMPL amplInstance;
+    private String specificSolverOptionsPrefix;
+    private String specificSolverOptions;
 
     public AMPL getAmplInstance() {
         return this.amplInstance;
     }
     public AMPLSolver() {
+        this.specificSolverOptions=this.initSpecificSolverOptions();
+        this.specificSolverOptionsPrefix=this.initSpecificSolverOptionsPrefix();
         this.initializeSolverParams();
     }
+protected abstract String initSpecificSolverOptionsPrefix();
+protected abstract String initSpecificSolverOptions();
 
     public void initializeSolverParams() {
         // serve anche da reset nel caso una precedente esecuzione dovesse andare in timeout
@@ -30,7 +37,7 @@ public abstract class AMPLSolver extends Solver {
     public int solveExecutive(Instant start) {
         int solution = -1;
         try {
-            this.amplInstance.setOption("solver", this.getAMPLImplSolver());
+            this.amplInstance.setOption("solver", this.initAMPLImplSolverName());
             Path filePath = Path.of("./src/ampl/1-rj-sumcj-java.ampl");
             String script = Files.readString(filePath);
             this.amplInstance.eval(script);
@@ -38,6 +45,7 @@ public abstract class AMPLSolver extends Solver {
             this.amplInstance.eval("read table jobs;");
             this.amplInstance.eval("let M:=sum{j in jobs}(PROCESSING_TIME[j])+max{j in jobs}(RELEASE_DATE[j]);");
             this.amplInstance.eval("printf \"Big-M set to %d\\n\", M ;");
+            this.amplInstance.setOption(this.specificSolverOptionsPrefix, this.specificSolverOptions);
             this.amplInstance.solve();
             Objective objFnVal = this.amplInstance.getObjective("TOTAL_COMPLETION_TIME");
             solution = (int) objFnVal.get().value();
@@ -54,7 +62,7 @@ public abstract class AMPLSolver extends Solver {
         return solution;
     }
 
-    protected abstract String getAMPLImplSolver();
+    protected abstract String initAMPLImplSolverName();
 
     @Override
     public void printStats() {
