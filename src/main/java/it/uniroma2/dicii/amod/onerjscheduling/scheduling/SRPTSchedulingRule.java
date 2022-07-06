@@ -31,7 +31,8 @@ public class SRPTSchedulingRule extends SchedulingRule {
         // -- per i job che sono nella schedula FISSA: dopo
         for (Job j : jobList) {
             // ignoro tutto ciò che succede durante la schedula fissa
-            if (j.getReleaseDate() > schedule.getCompletionTime()) {
+            if (j.getReleaseDate() > schedule.getCompletionTime()
+            && !events.contains(j.getReleaseDate())) {
                 events.add(j.getReleaseDate());
             }
         }
