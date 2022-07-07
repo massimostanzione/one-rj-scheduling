@@ -54,7 +54,7 @@ public class BnBLLBSolver extends BnBDFSSolver {
                 }
                 //if(p.getSolution()==null)
                 else*/
-                    p = this.examineProblem(p, rootBnBProblem, objFn);
+                    p = this.examineProblem(p, objFn);
                 res = p.getSolution();
                // System.out.println("ESAMINATO CON SOLUZIONE: "+p);
                 //ora posso decidere la logica di espansione

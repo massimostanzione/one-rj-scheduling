@@ -39,7 +39,7 @@ public class BnBFIFOSolver extends BnBDFSSolver {
             // il nodo potrebbe già essere stato visitato se sto risalendo
 
             if (!p.isVisited()) {
-                p = this.examineProblem(p, rootBnBProblem, objFn);
+                p = this.examineProblem(p, objFn);
                 if (!sch.scheduleInProblemListByFullInitSchedule(p.getFullInitialSchedule(), this.potentiallyExpandableInCurrentLevel))
                     this.potentiallyExpandableInCurrentLevel.add(p);
             }

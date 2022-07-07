@@ -115,7 +115,7 @@ public class BnBProblem {
     public boolean isBeingProcessed() {
         return this.status == PROCESSING;
     }
-    //TODO ora che ho questa funzione, eliminare i passaggi del problema root ove presenti
+
     public boolean isRoot(){
         return this.getFullInitialSchedule().size()==0;
     }

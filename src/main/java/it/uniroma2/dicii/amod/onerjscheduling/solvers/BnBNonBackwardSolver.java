@@ -34,7 +34,7 @@ public abstract class BnBNonBackwardSolver extends BnBSolver {
                 return new ExecutionReportItem(this.incumbent, this.globLB);
             BnBProblem p = this.openBnBProblems.get(0);
             this.openBnBProblems.remove(p);
-            p = examineProblem(p, rootBnBProblem, objFn);
+            p = examineProblem(p, objFn);
             this.openBnBProblems.addAll(this.generateSubProblems(p, this.checkForExpansion));
           //  this.updateStatuses(p.getStatus());
         }

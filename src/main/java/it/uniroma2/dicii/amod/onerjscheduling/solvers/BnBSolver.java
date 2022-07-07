@@ -88,7 +88,7 @@ public abstract class BnBSolver extends Solver {
         return p;
     }
 
-    protected BnBProblem examineProblem(BnBProblem p, BnBProblem rootBnBProblem, ObjectFunction objFn) {
+    protected BnBProblem examineProblem(BnBProblem p, ObjectFunction objFn) {
         //System.out.println("*** inizio processamento per " + p);
         p.setStatus(PROCESSING);
         if (checkDominance(p, this.jobList)) {
@@ -98,7 +98,7 @@ public abstract class BnBSolver extends Solver {
         } else {
             p = this.computeObjFnValue(p, objFn);
             int res = p.getSolution();
-            if (p == rootBnBProblem) this.globLB = res;
+            if (p.isRoot()) this.globLB = res;
             if (res >= this.incumbent) {p.setStatus(FATHOMED_BOUNDING);
                 //System.out.println(FATHOMED_BOUNDING);
             }
