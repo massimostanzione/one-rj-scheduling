@@ -1,10 +1,10 @@
 package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 
+import it.uniroma2.dicii.amod.onerjscheduling.entities.DataInstance;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.ExecutionReportItem;
-import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjFunctionFactory;
+import it.uniroma2.dicii.amod.onerjscheduling.exceptions.InvalidFinalStatusException;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum;
-import it.uniroma2.dicii.amod.onerjscheduling.utils.AMPLSolverTimeLimiter;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
 
 import java.time.Duration;
@@ -12,15 +12,14 @@ import java.time.Instant;
 
 // vale per 1|r_j|f
 public abstract class Solver {
-    protected String path;
-    protected SolverEnum name;
-    ObjectFunction objFunction = null;
+    //protected String path;
+    protected SolverEnum solverName;
+    //ObjectFunction objFunction = null;
 
     public Solver() {
-        this.name=this.initName();
+        this.solverName =this.initName();
     }
-
-
+/*
     public ObjectFunction getObjFunction() {
         return objFunction;
     }
@@ -33,10 +32,10 @@ public abstract class Solver {
             e.printStackTrace();
         }
     }
-
+*/
     public abstract SolverEnum initName();
 
-
+/*
     public String getPath() {
         return path;
     }
@@ -44,19 +43,18 @@ public abstract class Solver {
     public void setPath(String path) {
         this.path = path;
     }
-
+*/
     // l'obiettivo è:
     // - far scendere l'UB globale sul LB globale (trovo l'OTTIMO)
     // oppure
     // - arrivare a non avere più problemi aperti (trovo un LB)
-    public abstract int solveExecutive(Instant start);
+    public abstract ExecutionReportItem solveExecutive(Instant start, ObjectFunction objFn, DataInstance instance);
 
-    public ExecutionReportItem solve() {
-        initializeSolverParams();
-        ExecutionReportItem item = new ExecutionReportItem();
-        item.setDataPath(this.path);
-        item.setSolverName(this.name);
-        item.setObjFunction(this.objFunction.getName());
+    public ExecutionReportItem solve(ObjectFunction objFn,DataInstance instance) {
+        this.initializeSolverParams(instance);
+       // ExecutionReportItem item = new ExecutionReportItem();
+        //item.setDataPath(this.path);
+        //item.setObjFunction(this.objFunction.getName());
 
         var ref = new Object() {
             int solution = -1;
@@ -74,26 +72,27 @@ public abstract class Solver {
             }
 
         } else {*/
-            ref.solution = this.solveExecutive(start);
+            ExecutionReportItem item = this.solveExecutive(start, objFn,instance);
         //}
 
         Instant end = Instant.now();
+        item.setSolverName(this.solverName);
 
-        if (ref.solution == -1) {
+      /*  if (ref.solution == -1) {
             System.out.println("Timeout. Execution exceeded " + ExternalConfig.getSingletonInstance().getComputationTimeout() + " ms.\n");
-        }
-        item.setSolution(ref.solution);
-        if (ref.solution == -1)
+        }*/
+     //   item.setSolution(ref.solution);
+     /*   if (ref.solution == -1)
             item.setTime(ExternalConfig.getSingletonInstance().getShowElapsedTimeOnTimeout() ?
                     Duration.between(start, end).toMillis() : -1);
-        else {
+        else {*/
             item.setTime(Duration.between(start, end).toMillis());
-        }
+      //  }
         printStats();
         return item;
     }
 
-    public abstract void initializeSolverParams();
+    public abstract void initializeSolverParams(DataInstance instance);
 
-    protected abstract void printStats();
+    protected abstract void printStats() ;
 }

@@ -28,15 +28,21 @@ public class Schedule {
         return false;
     }
 
-
-    @Override
-    public String toString() {
-        /*String ret = "\nJob\tda\ta\tterminato\n";
+    public String toDetailedString() {
+        String ret = "\nJob\tda\ta\tterminato\n";
         for (ScheduleItem i : items) {
             ret += i.getJob().getId() + "\t" + i.getStartTime() + "\t" + i.getFinishTime() + "\t" + !i.isPreempted() + "\n";
         }
-        return ret;*/
-        String ret="";
+        return ret;
+    }
+
+    public int size() {
+        return this.items.size();
+    }
+
+    @Override
+    public String toString() {
+        String ret = "";
         for (ScheduleItem i : items) {
             ret += i.getJob().getId() + " ";
         }
@@ -60,7 +66,6 @@ public class Schedule {
         }
         return false;
     }
-
 
 
     public boolean isCompleted(List<Job> jobList) {

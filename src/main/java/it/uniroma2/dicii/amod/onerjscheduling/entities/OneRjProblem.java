@@ -1,5 +1,6 @@
 package it.uniroma2.dicii.amod.onerjscheduling.entities;
 
+import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum;
 import it.uniroma2.dicii.amod.onerjscheduling.solvers.Solver;
 
@@ -12,11 +13,11 @@ import java.util.List;
  */
 public class OneRjProblem {
     private String name;    // optional
-    private ObjectFunctionEnum objectFunction;
-    private List<String> instances = new ArrayList<>();
+    private ObjectFunction objectFunction;
+    private List<DataInstance> instances = new ArrayList<>();
     private List<Solver> optimumSolvers = new ArrayList<>();
     private List<Solver> relaxedSolvers = new ArrayList<>();
-    private List<ExecutionReportItem> results = new ArrayList<>();
+    //private List<ExecutionReportItem> results = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -26,23 +27,23 @@ public class OneRjProblem {
         this.name = name;
     }
 
-    public ObjectFunctionEnum getObjectFunction() {
+    public ObjectFunction getObjectFunction() {
         return objectFunction;
     }
 
-    public void setObjectFunction(ObjectFunctionEnum objectFunction) {
+    public void setObjectFunction(ObjectFunction objectFunction) {
         this.objectFunction = objectFunction;
     }
 
-    public List<String> getInstances() {
-        return instances;
-    }
+       public List<DataInstance> getInstances() {
+           return instances;
+       }
 
-    public void setInstances(List<String> instances) {
-        this.instances = instances;
-    }
+       public void setInstances(List<DataInstance> instances) {
+           this.instances = instances;
+       }
 
-    public void addInstance(String instance) {
+    public void addInstance(DataInstance instance) {
         this.instances.add(instance);
     }
 
@@ -70,22 +71,23 @@ public class OneRjProblem {
         this.relaxedSolvers.add(relaxedSolver);
     }
 
-    public List<ExecutionReportItem> getResults() {
-        return results;
-    }
+    /*
+        public List<ExecutionReportItem> getResults() {
+            return results;
+        }
 
-    public void setResults(List<ExecutionReportItem> results) {
-        this.results = results;
-    }
-
-    public void loadDirectory(String path) {
+        public void setResults(List<ExecutionReportItem> results) {
+            this.results = results;
+        }
+    */
+    public void loadInstanceDirectory(String path) {
         File folder = new File(path);
         File[] listOfFiles = folder.listFiles();
 
         for (int i = 0; i < listOfFiles.length; i++) {
-this.addInstance(listOfFiles[i].toString());
-
+            //this.addInstance(listOfFiles[i].toString());
+            if(!listOfFiles[i].isDirectory())
+            this.addInstance(new DataInstance(listOfFiles[i].toString()));
         }
-
     }
 }

@@ -2,6 +2,7 @@ package it.uniroma2.dicii.amod.onerjscheduling.scheduling;
 
 import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Job;
+import it.uniroma2.dicii.amod.onerjscheduling.exceptions.InvalidTimeException;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.SchedulingRuleEnum;
 
@@ -114,7 +115,7 @@ public class SRPTSchedulingRule extends SchedulingRule {
             }
         }
         if (ret < 0) {
-            throw new RuntimeException("Negative remaining time, ret = " + ret);
+            throw new InvalidTimeException("Negative remaining time, ret = " + ret);
         }
         return ret;
     }

@@ -34,10 +34,11 @@ public class AMPLSolverTimeLimiter implements Runnable {
         exit = true;
                 solver.getAmplInstance().interrupt();
                 solver.getAmplInstance().close();
-                solver.initializeSolverParams();
+                solver.initializeSolverParams(null);
     }
 
     public int compute(Solver solver) {
-        return solver.solveExecutive(null);
+        //return solver.solveExecutive(null, null, null);
+        return -1;
     }
 }

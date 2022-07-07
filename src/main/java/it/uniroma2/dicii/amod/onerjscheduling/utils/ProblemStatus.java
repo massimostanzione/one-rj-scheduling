@@ -7,13 +7,21 @@ public enum ProblemStatus {
 
     /**
      * Node generated but not visited yet.
+     * At the end of the execution no one of the nodes should be in this state.
      */
     NOT_VISITED,
 
     /**
-     * Node being processed. At the end of the execution no one of the nodes should be in this state.
+     * Node being pre-processed.
+     * At the end of the execution no one of the nodes should be in this state.
      */
     PROCESSING,
+
+    /**
+     * Node pre-processed, waiting for further processing (i.e. subproblems generation).
+     * At the end of the execution no one of the nodes should be in this state.
+     */
+    EXPANDABLE,
 
     /**
      * Node visited and able to be expanded (lower bound better than the incumbent).

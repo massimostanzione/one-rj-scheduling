@@ -25,11 +25,11 @@ public class DataDAO {
     }
 
     public List<Job> getDataInstances(String pathStr) {
-        List<Job> jobList = new ArrayList();
-
-        CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase();
 
         Path path = Paths.get(pathStr);
+        List<Job> jobList = new ArrayList();
+        CSVFormat csvFormat = CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase();
+
         CSVParser csvParser = null;
         try {
             csvParser = CSVParser.parse(path, StandardCharsets.UTF_8, csvFormat);

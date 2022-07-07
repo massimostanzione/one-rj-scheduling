@@ -2,22 +2,22 @@ package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 
 import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.BnBProblem;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.Job;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.DataInstance;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.ExecutionReportItem;
+import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
 import it.uniroma2.dicii.amod.onerjscheduling.scheduling.Schedule;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-public class BnBFIFOSolver extends BnBSolver {
-    private List<BnBProblem> treeBranchProblems;
-    private Boolean levelUp;
+public class BnBFIFOSolver extends BnBDFSSolver {
+   // private Boolean levelUp;
 
     @Override
-    public int solveExecutive(Instant start) {
+    public ExecutionReportItem solveExecutive(Instant start, ObjectFunction objFn, DataInstance instances) {
         this.openBnBProblems = new ArrayList<>();
         this.incumbent = Integer.MAX_VALUE;
         this.globLB = Integer.MAX_VALUE;
@@ -26,28 +26,32 @@ public class BnBFIFOSolver extends BnBSolver {
         Schedule initalSchedule = new Schedule();
         BnBProblem rootBnBProblem = new BnBProblem(initalSchedule);
         this.openBnBProblems.add(rootBnBProblem);
+        //this.allNodes.add(rootBnBProblem);
 
         Scheduler sch = new Scheduler();
-        this.treeBranchProblems = new ArrayList<>();
-        this.treeBranchProblems.add(rootBnBProblem);
+        this.potentiallyExpandableInCurrentLevel = new ArrayList<>();
+        this.potentiallyExpandableInCurrentLevel.add(rootBnBProblem);
         while (this.openBnBProblems.size() > 0) {
-            if (checkTimeout(start)) return this.incumbent;
+            if (checkTimeout(start))    // TODO sostituibile con break?
+                return new ExecutionReportItem(this.incumbent, this.globLB);
             BnBProblem p = this.openBnBProblems.get(0);
             this.openBnBProblems.remove(p);
             // il nodo potrebbe già essere stato visitato se sto risalendo
-            if (p.getStatus() == ProblemStatus.NOT_VISITED) {
-                p = this.examineProblem(p, rootBnBProblem);
-                if (!sch.scheduleInProblemListByFullInitSchedule(p.getFullInitialSchedule(), this.treeBranchProblems))
-                    this.treeBranchProblems.add(p);
-            }
-            BnBProblem next = this.generateNextProblemFIFO(p);
-            if (next != null)
-                this.openBnBProblems.add(next);
-            updateStatuses(p.getStatus());
-        }
-        return this.incumbent;
-    }
 
+            if (!p.isVisited()) {
+                p = this.examineProblem(p, rootBnBProblem, objFn);
+                if (!sch.scheduleInProblemListByFullInitSchedule(p.getFullInitialSchedule(), this.potentiallyExpandableInCurrentLevel))
+                    this.potentiallyExpandableInCurrentLevel.add(p);
+            }
+            List<BnBProblem> sub = this.generateSubProblems(p);
+            if (sub != null)
+                this.openBnBProblems.addAll(sub);
+            //this.allNodes.addAll(sub);
+           // this.updateStatuses(p.getStatus());
+        }
+        return new ExecutionReportItem(this.incumbent, this.globLB);
+    }
+/*
     private BnBProblem generateNextProblemFIFO(BnBProblem p) {
         Scheduler sch = new Scheduler();
         int skip = 0;
@@ -69,7 +73,7 @@ public class BnBFIFOSolver extends BnBSolver {
                         s.getItems().addAll(p.getFullInitialSchedule().getItems());
                         next = new BnBProblem(s, j);
                         // se la schedula che ho trovato non è stata ancora esaminata, allora va bene
-                        if (!sch.scheduleInProblemListByFullInitSchedule(next.getFullInitialSchedule(), this.treeBranchProblems)) {
+                        if (!sch.scheduleInProblemListByFullInitSchedule(next.getFullInitialSchedule(), this.potentiallyExpandable)) {
                             //  scendo di figlio
                             this.levelUp = false;
                             return next;
@@ -89,12 +93,12 @@ public class BnBFIFOSolver extends BnBSolver {
 
         // QUINDI: se sono qui vuol dire che devo per forza salire
         // vado a vedere nella lista dei visitati, a partire dal più recente a tornare indietro
-        for (int i = this.treeBranchProblems.size() - 1; i >= 0; i--) {
+        for (int i = this.potentiallyExpandable.size() - 1; i >= 0; i--) {
             // se è EXPANDED ed è del livello superiore
-            if (this.treeBranchProblems.get(i).getStatus() == ProblemStatus.EXPANDED
-                    && isSuperiorLevel(this.treeBranchProblems.get(i), p)) {
+            if (this.potentiallyExpandable.get(i).getStatus() == ProblemStatus.EXPANDED
+                    && isSuperiorLevel(this.potentiallyExpandable.get(i), p)) {
                 this.levelUp = true;
-                return this.treeBranchProblems.get(i);
+                return this.potentiallyExpandable.get(i);
             }
         }
         // se arrivo qui non ho più nulla da esaminare
@@ -107,7 +111,7 @@ public class BnBFIFOSolver extends BnBSolver {
      * @param a
      * @param b
      * @return
-     */
+     *//*
     private boolean isSuperiorLevel(BnBProblem a, BnBProblem b) {
         return a.getFullInitialSchedule().getItems().size() <=
                 b.getFullInitialSchedule().getItems().size() - 1;
@@ -115,7 +119,7 @@ public class BnBFIFOSolver extends BnBSolver {
 
     private boolean isLeaf(BnBProblem p) {
         return p.getFullInitialSchedule().getItems().size() == this.jobList.size() - 1;
-    }
+    }*/
 
     @Override
     public SolverEnum initName() {

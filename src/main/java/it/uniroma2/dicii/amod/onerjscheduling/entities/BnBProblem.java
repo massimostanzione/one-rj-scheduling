@@ -1,10 +1,12 @@
 package it.uniroma2.dicii.amod.onerjscheduling.entities;
 
 import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
+import it.uniroma2.dicii.amod.onerjscheduling.exceptions.ClosedStatusException;
+import it.uniroma2.dicii.amod.onerjscheduling.exceptions.InvalidFinalStatusException;
 import it.uniroma2.dicii.amod.onerjscheduling.scheduling.Schedule;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus;
 
-import static it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus.NOT_VISITED;
+import static it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus.*;
 
 public class BnBProblem {
 
@@ -53,8 +55,15 @@ public class BnBProblem {
         return status;
     }
 
-    public void setStatus(ProblemStatus status) {
+    public void setStatus(ProblemStatus status)  {
+        if(this.isFathomed() || this.isExpanded())
+                throw new ClosedStatusException(this.status,status);
+
         this.status = status;
+    }
+
+    private boolean isExpanded() {
+        return this.status==EXPANDED;
     }
 
     public Schedule getInitialSchedule() {
@@ -89,5 +98,33 @@ public class BnBProblem {
 
     public void setLastAddedJob(Job lastAddedJob) {
         this.lastAddedJob = lastAddedJob;
+    }
+
+    public boolean isWaitingForFurtherProcessing() {
+        return this.status == EXPANDABLE;
+    }
+
+    public boolean isFathomed() {
+        return this.status == FATHOMED_DOMINANCE || this.status == FATHOMED_BOUNDING;
+    }
+
+    public boolean isVisited() {
+        return this.status != NOT_VISITED;
+    }
+
+    public boolean isBeingProcessed() {
+        return this.status == PROCESSING;
+    }
+    //TODO ora che ho questa funzione, eliminare i passaggi del problema root ove presenti
+    public boolean isRoot(){
+        return this.getFullInitialSchedule().size()==0;
+    }
+
+    public void setExpanded() {
+        this.status=EXPANDED;
+    }
+
+    public boolean isClosed() {
+        return this.isFathomed()|| this.status==EXPANDED || this.status==OPTIMUM_REACHED;
     }
 }
