@@ -15,4 +15,3 @@ jobs:
         ROOT: "src"
         MIN_WORDS: 0
         MIN_CHARACTERS: 0
-        CLOSE_ON_SAME_BRANCH: 0
