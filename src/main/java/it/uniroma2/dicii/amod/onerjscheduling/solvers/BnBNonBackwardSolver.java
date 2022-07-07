@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
+import static it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus.EXPANDABLE;
 import static it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus.EXPANDED;
 
 public abstract class BnBNonBackwardSolver extends BnBSolver {
@@ -44,7 +45,8 @@ public abstract class BnBNonBackwardSolver extends BnBSolver {
     @Override
     protected List<BnBProblem> generateSubProblems(BnBProblem p, boolean checkForExpansion) {
         List<BnBProblem> ret = new ArrayList<>();
-        if (p.getStatus() == EXPANDED || !checkForExpansion) {
+        if (p.isExpandable() || !checkForExpansion) {
+            // esclusione del livello delle foglie
             if (p.getFullInitialSchedule().getItems().size() < this.jobList.size() - 1) {
                 // prendi la lista dei job, ordinali per id (per convenzione)
                 this.jobList.sort(Comparator.comparing(Job::getId));
@@ -60,6 +62,7 @@ public abstract class BnBNonBackwardSolver extends BnBSolver {
                     }
                 }
             }
+            p.setExpanded();
         }
         return ret;
     }

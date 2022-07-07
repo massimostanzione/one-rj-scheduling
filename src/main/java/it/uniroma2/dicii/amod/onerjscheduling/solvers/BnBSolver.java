@@ -147,6 +147,7 @@ public abstract class BnBSolver extends Solver {
         for (ProblemStatus status : ProblemStatus.values()) {
             //System.out.println("Ciclo: "+status);
             for (BnBProblem p : this.allNodes) {
+                // TODO check: se FullSolver devono esserci soltanto EXPANDED
                 if(!p.isClosed())
                         throw new InvalidFinalStatusException(p);
                 if (p.getStatus() == status) {

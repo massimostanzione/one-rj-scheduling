@@ -127,4 +127,8 @@ public class BnBProblem {
     public boolean isClosed() {
         return this.isFathomed()|| this.status==EXPANDED || this.status==OPTIMUM_REACHED;
     }
+
+    public boolean isExpandable() {
+        return this.status==EXPANDABLE;
+    }
 }
