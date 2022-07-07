@@ -3,6 +3,7 @@ package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.BnBProblem;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.DataInstance;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Job;
+import it.uniroma2.dicii.amod.onerjscheduling.exceptions.InconsistentStatusException;
 import it.uniroma2.dicii.amod.onerjscheduling.exceptions.InvalidFinalStatusException;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
 import it.uniroma2.dicii.amod.onerjscheduling.scheduling.Schedule;
@@ -147,11 +148,11 @@ public abstract class BnBSolver extends Solver {
         for (ProblemStatus status : ProblemStatus.values()) {
             //System.out.println("Ciclo: "+status);
             for (BnBProblem p : this.allNodes) {
-                // TODO check: se FullSolver devono esserci soltanto EXPANDED
                 if(!p.isClosed())
                         throw new InvalidFinalStatusException(p);
                 if (p.getStatus() == status) {
                    // System.out.println("trovato: "+status);
+                    if (this instanceof BnBFullSolver && status!=EXPANDED) throw new InconsistentStatusException("Found "+status+" in an BnBFullSolver execution.");
                     if (this.statuses.containsKey(status))
                         this.statuses.put(status, this.statuses.get(status) + 1);
                     else
