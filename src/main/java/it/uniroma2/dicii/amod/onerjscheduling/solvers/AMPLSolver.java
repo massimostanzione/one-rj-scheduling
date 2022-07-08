@@ -41,21 +41,17 @@ protected abstract String initSpecificSolverOptions();
         int solution = -1;
         try {
             this.amplInstance.setOption("solver", this.initAMPLImplSolverName());
-            Path filePath = Path.of("./src/ampl/1-rj-sumcj-java.ampl");
-            String script = Files.readString(filePath);
-            // TODO se possibile spostare più righe sui file AMPL invece di lasciare tutto hardcoded
-            this.amplInstance.eval(script);
-            this.amplInstance.eval("table jobs IN \"amplcsv\" \"" + instance.getPath() + "\": jobs <- [JOB_ID],RELEASE_DATE,PROCESSING_TIME;");
-            this.amplInstance.eval("read table jobs;");
-            this.amplInstance.eval("let M:=sum{j in jobs}(PROCESSING_TIME[j])+max{j in jobs}(RELEASE_DATE[j]);");
-            this.amplInstance.eval("printf \"Big-M set to %d\\n\", M ;");
             this.amplInstance.setOption(this.specificSolverOptionsPrefix, this.specificSolverOptions);
-            this.amplInstance.solve();
-            this.amplInstance.eval("display RELEASE_DATE,PROCESSING_TIME,START_TIME,COMPLETION_TIME;");
+            this.amplInstance.eval(this.loadAMPLfile("./src/ampl/1-rj-sumcj-java.ampl", instance.getPath()));
+            //this.amplInstance.eval("table jobs IN \"amplcsv\" \"" + instance.getPath() + "\": jobs <- [JOB_ID],RELEASE_DATE,PROCESSING_TIME;");
+           // this.amplInstance.eval(this.loadAMPLfile("./src/ampl/java/1-rj-sumcj-java.ampl"));
+           // this.amplInstance.eval("read table jobs;");
+          //  this.amplInstance.eval("let M:=sum{j in jobs}(PROCESSING_TIME[j])+max{j in jobs}(RELEASE_DATE[j]);");
+           // this.amplInstance.eval("printf \"Big-M set to %d\\n\", M ;");
+           // this.amplInstance.solve();
+          //  this.amplInstance.eval("display RELEASE_DATE,PROCESSING_TIME,START_TIME,COMPLETION_TIME;");
             Objective objFnVal = this.amplInstance.getObjective("TOTAL_COMPLETION_TIME");
             solution = (int) objFnVal.get().value();
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (RuntimeException e) {
             e.printStackTrace();
            /* System.out.println("Timeout.");
@@ -69,7 +65,16 @@ protected abstract String initSpecificSolverOptions();
     }
 
     protected abstract String initAMPLImplSolverName();
-
+private String loadAMPLfile(String filePath, String instPath){
+String script="";
+    Path file = Path.of(filePath);
+    try {
+        script = Files.readString(file);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    return script.replace("$PATH", "\""+instPath+"\"");
+}
     @Override
     public void printStats() {
     }
