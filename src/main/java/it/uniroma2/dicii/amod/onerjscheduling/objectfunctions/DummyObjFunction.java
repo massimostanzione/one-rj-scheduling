@@ -16,6 +16,11 @@ public class DummyObjFunction extends ObjectFunction {
     }
 
     @Override
+    protected void initAmplString() {
+        this.amplString="DUMMY";
+    }
+
+    @Override
     public void initName() {
         this.name = ObjectFunctionEnum.DUMMY;
     }

@@ -10,16 +10,23 @@ public abstract class ObjectFunction {
     protected ObjectFunctionEnum name;
     protected String mathNotation;
     protected SchedulingRule relaxedProblemRule;
+    protected String amplString;
+
+    public String getAmplString() {
+        return this.amplString;
+    }
 
     public ObjectFunction() {
         this.initName();
         this.initMathNotation();
         this.initRelaxedProblemRule();
+        this.initAmplString();
     }
 
     protected abstract void initMathNotation();
 
     protected abstract void initRelaxedProblemRule();
+    protected abstract void initAmplString();
 
     public String getMathNotation() {
         return mathNotation;

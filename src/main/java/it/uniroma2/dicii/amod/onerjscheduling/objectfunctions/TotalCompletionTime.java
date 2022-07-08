@@ -5,10 +5,6 @@ import it.uniroma2.dicii.amod.onerjscheduling.scheduling.Schedule;
 import it.uniroma2.dicii.amod.onerjscheduling.scheduling.ScheduleItem;
 
 public class TotalCompletionTime extends ObjectFunction {
-    // TODO stringa per obj ampl?
-    // anche perché AMPLSolver non ne ha una generica, è hard-coded su \sum C_j
-    public TotalCompletionTime() {
-    }
 
     @Override
     protected void initMathNotation() {
@@ -23,6 +19,10 @@ public class TotalCompletionTime extends ObjectFunction {
     @Override
     public void initName() {
         this.name = ObjectFunctionEnum.SUM_COMPLETION_TIMES;
+    }
+    @Override
+    public void initAmplString() {
+        this.amplString = "TOTAL_COMPLETION_TIME";
     }
 
     public int compute(Schedule s) {

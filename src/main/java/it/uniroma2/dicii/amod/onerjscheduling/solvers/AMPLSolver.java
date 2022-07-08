@@ -50,7 +50,7 @@ protected abstract String initSpecificSolverOptions();
            // this.amplInstance.eval("printf \"Big-M set to %d\\n\", M ;");
            // this.amplInstance.solve();
           //  this.amplInstance.eval("display RELEASE_DATE,PROCESSING_TIME,START_TIME,COMPLETION_TIME;");
-            Objective objFnVal = this.amplInstance.getObjective("TOTAL_COMPLETION_TIME");
+            Objective objFnVal = this.amplInstance.getObjective(objFn.getAmplString());
             solution = (int) objFnVal.get().value();
         } catch (RuntimeException e) {
             e.printStackTrace();
