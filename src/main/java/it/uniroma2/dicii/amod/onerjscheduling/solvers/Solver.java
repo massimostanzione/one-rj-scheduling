@@ -92,7 +92,7 @@ public abstract class Solver {
         return item;
     }
 
-    public abstract void initializeSolverParams(DataInstance instance);
+    protected abstract void initializeSolverParams(DataInstance instance);
 
     protected abstract void printStats() ;
 }

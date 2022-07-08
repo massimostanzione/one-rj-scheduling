@@ -21,14 +21,6 @@ public abstract class BnBNonBackwardSolver extends BnBSolver {
 
     @Override
     public ExecutionReportItem solveExecutive(Instant start, ObjectFunction objFn, DataInstance instance) {
-        this.openBnBProblems = new ArrayList<>();
-        this.incumbent = Integer.MAX_VALUE;
-        this.globLB = Integer.MAX_VALUE;
-        this.statuses = new HashMap<>();
-
-        Schedule initalSchedule = new Schedule();
-        BnBProblem rootBnBProblem = new BnBProblem(initalSchedule);
-        this.openBnBProblems.add(rootBnBProblem);
 
         while (this.openBnBProblems.size() > 0) {
             if (checkTimeout(start))

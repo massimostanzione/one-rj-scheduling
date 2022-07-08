@@ -18,19 +18,10 @@ public class BnBFIFOSolver extends BnBDFSSolver {
 
     @Override
     public ExecutionReportItem solveExecutive(Instant start, ObjectFunction objFn, DataInstance instances) {
-        this.openBnBProblems = new ArrayList<>();
-        this.incumbent = Integer.MAX_VALUE;
-        this.globLB = Integer.MAX_VALUE;
-        this.statuses = new HashMap<>();
 
-        Schedule initalSchedule = new Schedule();
-        BnBProblem rootBnBProblem = new BnBProblem(initalSchedule);
-        this.openBnBProblems.add(rootBnBProblem);
         //this.allNodes.add(rootBnBProblem);
 
         Scheduler sch = new Scheduler();
-        this.potentiallyExpandableInCurrentLevel = new ArrayList<>();
-        this.potentiallyExpandableInCurrentLevel.add(rootBnBProblem);
         while (this.openBnBProblems.size() > 0) {
             if (checkTimeout(start))    // TODO sostituibile con break?
                 return new ExecutionReportItem(this.incumbent, this.globLB);

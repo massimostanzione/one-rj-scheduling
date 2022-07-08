@@ -13,6 +13,7 @@ import it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -65,10 +66,19 @@ public abstract class BnBSolver extends Solver {
     }
 
     @Override
-    public void initializeSolverParams(DataInstance instance) {
+    protected void initializeSolverParams(DataInstance instance) {
         this.jobList = instance.getJobList();
         this.allNodes=new ArrayList<>();
-        //TODO spostare dalle classi sottostanti
+
+        this.openBnBProblems = new ArrayList<>();
+        this.incumbent = Integer.MAX_VALUE;
+        this.globLB = Integer.MAX_VALUE;
+        this.statuses = new HashMap<>();
+
+
+        Schedule initalSchedule = new Schedule();
+        BnBProblem rootBnBProblem = new BnBProblem(initalSchedule);
+        this.openBnBProblems.add(rootBnBProblem);
     }
 
    /* protected void updateStatuses(ProblemStatus status) {

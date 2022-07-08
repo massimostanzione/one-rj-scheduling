@@ -23,18 +23,9 @@ public class BnBLLBSolver extends BnBDFSSolver {
 
     @Override
     public ExecutionReportItem solveExecutive(Instant start, ObjectFunction objFn, DataInstance instance) {
-        this.openBnBProblems = new ArrayList<>();
-        this.incumbent = Integer.MAX_VALUE;
-        this.globLB = Integer.MAX_VALUE;
-        this.statuses = new HashMap<>();
 
-        Schedule initalSchedule = new Schedule();
-        BnBProblem rootBnBProblem = new BnBProblem(initalSchedule);
-        this.openBnBProblems.add(rootBnBProblem);
         //this.allNodes.add(rootBnBProblem);
 
-        this.potentiallyExpandableInCurrentLevel = new ArrayList<>();
-        this.potentiallyExpandableInCurrentLevel.add(rootBnBProblem);
 
         Scheduler sch = new Scheduler();
         // QUI GUARDO LA LISTA COME LIVELLO
@@ -54,6 +45,7 @@ public class BnBLLBSolver extends BnBDFSSolver {
                 }
                 //if(p.getSolution()==null)
                 else*/
+                if(!p.isVisited())
                     p = this.examineProblem(p, objFn);
                 res = p.getSolution();
                // System.out.println("ESAMINATO CON SOLUZIONE: "+p);

@@ -58,7 +58,6 @@ public class BnBProblem {
     public void setStatus(ProblemStatus status)  {
         if(this.isFathomed() || this.isExpanded())
                 throw new ClosedStatusException(this.status,status);
-
         this.status = status;
     }
 
