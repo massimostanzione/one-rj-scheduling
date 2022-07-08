@@ -2,17 +2,12 @@ package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 
 import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.BnBProblem;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.DataInstance;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.ExecutionReportItem;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.output.InstanceExecResult;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
-import it.uniroma2.dicii.amod.onerjscheduling.scheduling.Schedule;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import static it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus.FATHOMED_BOUNDING;
 
 public class BnBLLBSolver extends BnBDFSSolver {
 
@@ -22,7 +17,7 @@ public class BnBLLBSolver extends BnBDFSSolver {
     }
 
     @Override
-    public ExecutionReportItem solveExecutive(Instant start, ObjectFunction objFn, DataInstance instance) {
+    public InstanceExecResult solveExecutive(Instant start, ObjectFunction objFn, Instance instance) {
 
         //this.allNodes.add(rootBnBProblem);
 
@@ -32,7 +27,7 @@ public class BnBLLBSolver extends BnBDFSSolver {
         int min;
         while (this.openBnBProblems.size() > 0) {
             if (checkTimeout(start))
-                return new ExecutionReportItem(this.incumbent, this.globLB);
+                return new InstanceExecResult(this.incumbent, this.globLB);
             min = Integer.MAX_VALUE;
             int res = -1;
             for (BnBProblem p : this.openBnBProblems) {
@@ -99,7 +94,7 @@ public class BnBLLBSolver extends BnBDFSSolver {
             }
             // this.potentiallyExpandable.removeAll(this.potentiallyExpandable);
         }
-        return new ExecutionReportItem(this.incumbent, this.globLB);
+        return new InstanceExecResult(this.incumbent, this.globLB);
     }
 
 }

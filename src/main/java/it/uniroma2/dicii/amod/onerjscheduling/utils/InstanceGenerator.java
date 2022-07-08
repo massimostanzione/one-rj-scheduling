@@ -36,10 +36,10 @@ public class InstanceGenerator {
                     start = 15;
                     end = 25;
                     break;
-            //    case SIZE_LARGE:
-            //        start = 30;
-           //         end = 50;
-           //         break;
+                case SIZE_LARGE:
+                   start = 30;
+                    end = 50;
+                    break;
             }
             for (Variance v : Variance.values()) {
                 double var = v == VARIANCE_SMALL ? VARIANCE_SMALL_VAL : VARIANCE_HIGH_VAL;
@@ -67,9 +67,9 @@ public class InstanceGenerator {
     }
 
 
-    private enum Size {SIZE_SMALL, SIZE_MEDIUM}
+    public enum Size {SIZE_SMALL, SIZE_MEDIUM, SIZE_LARGE}
 
-    protected enum Variance {VARIANCE_SMALL, VARIANCE_LARGE}
+    public enum Variance {VARIANCE_SMALL, VARIANCE_LARGE}
 
-    private enum ReleaseTimes {RJ_SMALL, RJ_RAND, RJ_PROPORTIONAL}
+    public enum ReleaseTimes {RJ_SMALL, RJ_RAND, RJ_PROPORTIONAL}
 }

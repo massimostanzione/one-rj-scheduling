@@ -1,7 +1,6 @@
 package it.uniroma2.dicii.amod.onerjscheduling.entities;
 
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
-import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum;
 import it.uniroma2.dicii.amod.onerjscheduling.solvers.Solver;
 
 import java.io.File;
@@ -14,7 +13,7 @@ import java.util.List;
 public class OneRjProblem {
     private String name;    // optional
     private ObjectFunction objectFunction;
-    private List<DataInstance> instances = new ArrayList<>();
+    private List<Instance> instances = new ArrayList<>();
     private List<Solver> optimumSolvers = new ArrayList<>();
     private List<Solver> relaxedSolvers = new ArrayList<>();
     //private List<ExecutionReportItem> results = new ArrayList<>();
@@ -35,15 +34,15 @@ public class OneRjProblem {
         this.objectFunction = objectFunction;
     }
 
-       public List<DataInstance> getInstances() {
+       public List<Instance> getInstances() {
            return instances;
        }
 
-       public void setInstances(List<DataInstance> instances) {
+       public void setInstances(List<Instance> instances) {
            this.instances = instances;
        }
 
-    public void addInstance(DataInstance instance) {
+    public void addInstance(Instance instance) {
         this.instances.add(instance);
     }
 
@@ -87,7 +86,7 @@ public class OneRjProblem {
         for (int i = 0; i < listOfFiles.length; i++) {
             //this.addInstance(listOfFiles[i].toString());
             if(!listOfFiles[i].isDirectory())
-            this.addInstance(new DataInstance(listOfFiles[i].toString()));
+            this.addInstance(new Instance(listOfFiles[i].toString()));
         }
     }
 }

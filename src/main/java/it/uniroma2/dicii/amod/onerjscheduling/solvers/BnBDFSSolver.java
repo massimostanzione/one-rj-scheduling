@@ -2,7 +2,7 @@ package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 
 import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.BnBProblem;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.DataInstance;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Job;
 import it.uniroma2.dicii.amod.onerjscheduling.scheduling.Schedule;
 
@@ -15,7 +15,7 @@ public abstract class BnBDFSSolver extends BnBSolver {
     protected Boolean levelUp;
 
     @Override
-    protected void initializeSolverParams(DataInstance instance) {
+    protected void initializeSolverParams(Instance instance) {
         super.initializeSolverParams(instance);
         this.potentiallyExpandableInCurrentLevel = new ArrayList<>();
         this.potentiallyExpandableInCurrentLevel.add(this.openBnBProblems.get(0));

@@ -1,7 +1,7 @@
 package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 
 import it.uniroma2.dicii.amod.onerjscheduling.entities.BnBProblem;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.DataInstance;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Job;
 import it.uniroma2.dicii.amod.onerjscheduling.exceptions.InconsistentStatusException;
 import it.uniroma2.dicii.amod.onerjscheduling.exceptions.InvalidFinalStatusException;
@@ -66,7 +66,7 @@ public abstract class BnBSolver extends Solver {
     }
 
     @Override
-    protected void initializeSolverParams(DataInstance instance) {
+    protected void initializeSolverParams(Instance instance) {
         this.jobList = instance.getJobList();
         this.allNodes=new ArrayList<>();
 
@@ -126,7 +126,7 @@ public abstract class BnBSolver extends Solver {
             //p.setSolution(res); la soluzione è già dentro p, settata da processProblem(p);
             //se si è arrivati a questo punto il nodo può essere marcato come espandibile
             if (p.getStatus() == PROCESSING) {
-                p.setStatus(EXPANDABLE);    // TODO aggiornare le procedure nei solutori bnb
+                p.setStatus(EXPANDABLE);
             }
         }
         //if(p.getStatus()!=FATHOMED_DOMINANCE)
@@ -153,12 +153,12 @@ public abstract class BnBSolver extends Solver {
     protected abstract List<BnBProblem> generateSubProblems(BnBProblem p, boolean checkForExpansion);
 
     @Override
-    protected void printStats() {
+    protected void printStats(boolean timeout) {
         //System.out.println(this.allNodes);
         for (ProblemStatus status : ProblemStatus.values()) {
             //System.out.println("Ciclo: "+status);
             for (BnBProblem p : this.allNodes) {
-                if(!p.isClosed())
+                if(!p.isClosed() &&!timeout)
                         throw new InvalidFinalStatusException(p);
                 if (p.getStatus() == status) {
                    // System.out.println("trovato: "+status);

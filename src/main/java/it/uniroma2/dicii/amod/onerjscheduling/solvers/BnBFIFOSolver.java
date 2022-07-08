@@ -2,29 +2,25 @@ package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 
 import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.BnBProblem;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.DataInstance;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.ExecutionReportItem;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.output.InstanceExecResult;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
-import it.uniroma2.dicii.amod.onerjscheduling.scheduling.Schedule;
-import it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class BnBFIFOSolver extends BnBDFSSolver {
    // private Boolean levelUp;
 
     @Override
-    public ExecutionReportItem solveExecutive(Instant start, ObjectFunction objFn, DataInstance instances) {
+    public InstanceExecResult solveExecutive(Instant start, ObjectFunction objFn, Instance instances) {
 
         //this.allNodes.add(rootBnBProblem);
 
         Scheduler sch = new Scheduler();
         while (this.openBnBProblems.size() > 0) {
             if (checkTimeout(start))    // TODO sostituibile con break?
-                return new ExecutionReportItem(this.incumbent, this.globLB);
+                return new InstanceExecResult(this.incumbent, this.globLB);
             BnBProblem p = this.openBnBProblems.get(0);
             this.openBnBProblems.remove(p);
             // il nodo potrebbe già essere stato visitato se sto risalendo
@@ -40,7 +36,7 @@ public class BnBFIFOSolver extends BnBDFSSolver {
             //this.allNodes.addAll(sub);
            // this.updateStatuses(p.getStatus());
         }
-        return new ExecutionReportItem(this.incumbent, this.globLB);
+        return new InstanceExecResult(this.incumbent, this.globLB);
     }
 /*
     private BnBProblem generateNextProblemFIFO(BnBProblem p) {

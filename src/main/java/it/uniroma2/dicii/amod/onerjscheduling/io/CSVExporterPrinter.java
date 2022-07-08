@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static it.uniroma2.dicii.amod.onerjscheduling.utils.Consts.SOLVER_PERFS_CARET;
+
 /**
  * A CSV exporter tool, used to export dataset in a standardized way.
  */
@@ -40,8 +42,8 @@ public class CSVExporterPrinter extends ExporterPrinter {
             File file = new File(outname);
             file.getParentFile().mkdirs();
             boolean alreadyExists = file.createNewFile();
-            if (alreadyExists)
-                //log.finer("CSV target file already exists.");
+           // if (alreadyExists)
+            //    log.finer("CSV target file already exists.");
             fileWriter = new FileWriter(file);
             Integer i = -1;
             Integer j = -1;
@@ -52,14 +54,14 @@ public class CSVExporterPrinter extends ExporterPrinter {
                     j = -1;
                     for (String value : datasetRecord) {
                         j++;
-                        fileWriter.append(value);
-                        fileWriter.append(j + 1 < recordDim ? "," : "\n");
+                        fileWriter.append(value.replace(SOLVER_PERFS_CARET, ""));
+                        fileWriter.append(j + 1 < recordDim &&!value.contains(SOLVER_PERFS_CARET)? "," : "\n");
                     }
                 }
             }
             fileWriter.close();
         } catch (IOException e) {
-            //log.severe(e.getMessage());
+         //   log.severe(e.getMessage());
         }
     }
 

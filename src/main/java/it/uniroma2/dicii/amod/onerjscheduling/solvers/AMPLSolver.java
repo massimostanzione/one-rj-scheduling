@@ -3,8 +3,8 @@ package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 import com.ampl.AMPL;
 import com.ampl.Environment;
 import com.ampl.Objective;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.DataInstance;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.ExecutionReportItem;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.output.InstanceExecResult;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
 
@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.Map;
 
 public abstract class AMPLSolver extends Solver {
     private AMPL amplInstance;
@@ -30,14 +29,14 @@ public abstract class AMPLSolver extends Solver {
 protected abstract String initSpecificSolverOptionsPrefix();
 protected abstract String initSpecificSolverOptions();
 
-    public void initializeSolverParams(DataInstance instance) {
+    public void initializeSolverParams(Instance instance) {
         // serve anche da reset nel caso una precedente esecuzione dovesse andare in timeout
         Environment env = new Environment(ExternalConfig.getSingletonInstance().getAmplPath());
         this.amplInstance = new AMPL(env);
     }
 
     @Override
-    public ExecutionReportItem solveExecutive(Instant start, ObjectFunction objFn, DataInstance instance) {
+    public InstanceExecResult solveExecutive(Instant start, ObjectFunction objFn, Instance instance) {
         int solution = -1;
         try {
             this.amplInstance.setOption("solver", this.initAMPLImplSolverName());
@@ -61,7 +60,7 @@ protected abstract String initSpecificSolverOptions();
             // close all AMPL related resources here
             this.amplInstance.close();
         }
-        return new ExecutionReportItem(solution, -1);
+        return new InstanceExecResult(solution, -1);
     }
 
     protected abstract String initAMPLImplSolverName();
@@ -76,6 +75,6 @@ String script="";
     return script.replace("$PATH", "\""+instPath+"\"");
 }
     @Override
-    public void printStats() {
+    public void printStats(boolean timeout) {
     }
 }

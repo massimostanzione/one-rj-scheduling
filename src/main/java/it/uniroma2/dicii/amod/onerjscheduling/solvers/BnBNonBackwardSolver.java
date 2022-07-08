@@ -1,8 +1,8 @@
 package it.uniroma2.dicii.amod.onerjscheduling.solvers;
 
 import it.uniroma2.dicii.amod.onerjscheduling.entities.BnBProblem;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.DataInstance;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.ExecutionReportItem;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.output.InstanceExecResult;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Job;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
 import it.uniroma2.dicii.amod.onerjscheduling.scheduling.Schedule;
@@ -10,28 +10,24 @@ import it.uniroma2.dicii.amod.onerjscheduling.scheduling.Schedule;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-
-import static it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus.EXPANDABLE;
-import static it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus.EXPANDED;
 
 public abstract class BnBNonBackwardSolver extends BnBSolver {
     protected boolean checkForExpansion;
 
     @Override
-    public ExecutionReportItem solveExecutive(Instant start, ObjectFunction objFn, DataInstance instance) {
+    public InstanceExecResult solveExecutive(Instant start, ObjectFunction objFn, Instance instance) {
 
         while (this.openBnBProblems.size() > 0) {
             if (checkTimeout(start))
-                return new ExecutionReportItem(this.incumbent, this.globLB);
+                return new InstanceExecResult(this.incumbent, this.globLB);
             BnBProblem p = this.openBnBProblems.get(0);
             this.openBnBProblems.remove(p);
             p = examineProblem(p, objFn);
             this.openBnBProblems.addAll(this.generateSubProblems(p, this.checkForExpansion));
           //  this.updateStatuses(p.getStatus());
         }
-        return new ExecutionReportItem(this.incumbent, this.globLB);
+        return new InstanceExecResult(this.incumbent, this.globLB);
     }
 
     @Override
