@@ -27,16 +27,18 @@ public class BnBFIFOSolver extends BnBDFSSolver {
 
             if (!p.isVisited()) {
                 p = this.examineProblem(p, objFn);
-               // this.recordForStats(p);
+                //System.out.println(p.getStatus());
+                //this.recordForStats(p);
                 if(p.isOptimalByLB())
                     return new InstanceExecResult(this.incumbent, this.globLB);
                 if (!sch.scheduleInProblemListByFullInitSchedule(p.getFullInitialSchedule(), this.potentiallyExpandableInCurrentLevel))
                     this.potentiallyExpandableInCurrentLevel.add(p);
             }
            // this.recordForStats(p);
+            if(!p.isClosed()){
             List<BnBProblem> sub = this.generateSubProblems(p);
             if (sub != null)
-                this.openBnBProblems.addAll(sub);
+                this.openBnBProblems.addAll(sub);}
             //this.allNodes.addAll(sub);
            // this.updateStatuses(p.getStatus());
         }
