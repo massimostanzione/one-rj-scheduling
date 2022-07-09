@@ -4,17 +4,22 @@ import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.output.InstanceExecResult;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
+import it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 
 // vale per 1|r_j|f
 public abstract class Solver {
     //protected String path;
     protected SolverEnum solverName;
+    protected Map<ProblemStatus, Integer> statuses;
 
     public Solver() {
         this.solverName = this.initName();
+        this.statuses=new HashMap<>();
     }
     //ObjectFunction objFunction = null;
 
@@ -90,6 +95,7 @@ public abstract class Solver {
                     Duration.between(start, end).toMillis() : -1);
         else {*/
         item.setTime(Duration.between(start, end).toMillis());
+        item.setStatuses(this.statuses);
         //  }
         boolean timeout = item.getTime() > ExternalConfig.getSingletonInstance().getComputationTimeout();
         printStats(timeout);

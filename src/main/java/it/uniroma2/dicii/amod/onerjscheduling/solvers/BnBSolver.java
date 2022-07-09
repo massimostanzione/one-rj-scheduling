@@ -15,7 +15,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus.*;
 
@@ -25,7 +24,6 @@ public abstract class BnBSolver extends Solver {
     protected List<BnBProblem> openBnBProblems;
     protected int incumbent;
     protected int globLB;
-    protected Map<ProblemStatus, Integer> statuses;
     protected List<BnBProblem> allNodes;// = new ArrayList<>();
     /*  protected List<BnBProblem> openBnBProblems;
     protected int incumbent;
@@ -100,9 +98,10 @@ public abstract class BnBSolver extends Solver {
     }
 
     protected BnBProblem examineProblem(BnBProblem p, ObjectFunction objFn) {
+        boolean isFullSolver=this instanceof BnBFullSolver;
         //System.out.println("*** inizio processamento per " + p);
         p.setStatus(PROCESSING);
-        if (checkDominance(p, this.jobList)) {
+        if (checkDominance(p, this.jobList)&&!isFullSolver) {
             //System.out.println(FATHOMED_DOMINANCE);
             p.setStatus(FATHOMED_DOMINANCE);
             p.setSolution(-1);
@@ -110,16 +109,17 @@ public abstract class BnBSolver extends Solver {
             p = this.computeObjFnValue(p, objFn);
             int res = p.getSolution();
             if (p.isRoot()) this.globLB = res;
-            if (res >= this.incumbent) {p.setStatus(FATHOMED_BOUNDING);
+            if (res >= this.incumbent&&!isFullSolver) {p.setStatus(FATHOMED_BOUNDING);
                 //System.out.println(FATHOMED_BOUNDING);
             }
             if (res < this.incumbent && p.isFeasible()) {
                // System.out.println("******** ammissibilità + ottimalità(soluz. migliore dell'incumbent): AGGIORNO L'INCUMBENT OTTIMO DA " + incumbent + " A " + res);
                 this.incumbent = res;
                 //il lb globale è mantenuto fermo, questo per il controllo seguente:
-                if (this.incumbent == this.globLB) {
+                if (this.incumbent == this.globLB&&!isFullSolver) {
                     //System.out.println(">>> FINE: trovato OTTIMO (garantito) per il non-pmnt! AMMISSIBILITÀ e inoltre" + incumbent + " = " + globLB);
-                    p.setStatus(OPTIMUM_REACHED);
+                    p.setStatus(OPTIMAL_REACHED);
+                    //System.out.println(OPTIMUM_REACHED);
                     //break;
                 }
             }
@@ -132,7 +132,10 @@ public abstract class BnBSolver extends Solver {
         //if(p.getStatus()!=FATHOMED_DOMINANCE)
         //System.out.println("sol="+p.getSolution()+"\tsched="+p.getFullInitialSchedule()+"\tfeas="+p.isFeasible()+"\nSchedula finale:"+ p.getFinalSchedule().toDetailedString());
 //System.out.println("aggiungo alla lista di TUTTI i nodi: "+p);
-        this.allNodes.add(p);
+        //this.allNodes.add(p);
+        //System.out.println("ho un "+p.getStatus());
+        this.recordForStats(p);
+        //System.out.println(this.allNodes);
         return p;
     }
 
@@ -158,10 +161,10 @@ public abstract class BnBSolver extends Solver {
         for (ProblemStatus status : ProblemStatus.values()) {
             //System.out.println("Ciclo: "+status);
             for (BnBProblem p : this.allNodes) {
-                if(!p.isClosed() &&!timeout)
+                if(!p.isClosed() && !timeout)
                         throw new InvalidFinalStatusException(p);
                 if (p.getStatus() == status) {
-                   // System.out.println("trovato: "+status);
+                    //System.out.println("trovato: "+status);
                     if (this instanceof BnBFullSolver && status!=EXPANDED) throw new InconsistentStatusException("Found "+status+" in an BnBFullSolver execution.");
                     if (this.statuses.containsKey(status))
                         this.statuses.put(status, this.statuses.get(status) + 1);
@@ -178,6 +181,7 @@ public abstract class BnBSolver extends Solver {
         }
         //long tot = computeNodesNo(this.jobList.size());
         System.out.println(sum + " tree nodes visited");
+       //System.out.println(this.allNodes);
         System.out.println(this.statuses);
         System.out.println("\n");
     }
@@ -197,4 +201,11 @@ public abstract class BnBSolver extends Solver {
     }
 
 
+    protected void recordForStats(BnBProblem p) {
+        if(this.allNodes.contains(p)){
+            for(BnBProblem iterated:this.allNodes){
+                if(iterated.equals(p))iterated.setStatus(p.getStatus());
+            }
+        }else this.allNodes.add(p);
+    }
 }

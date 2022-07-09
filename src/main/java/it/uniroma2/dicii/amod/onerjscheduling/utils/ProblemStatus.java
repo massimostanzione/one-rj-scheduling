@@ -41,5 +41,5 @@ public enum ProblemStatus {
     /**
      * Node visited and closed because guaranteed optimum was reached.
      */
-    OPTIMUM_REACHED
+    OPTIMAL_REACHED
 }

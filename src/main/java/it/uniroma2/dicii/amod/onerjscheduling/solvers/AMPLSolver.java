@@ -60,7 +60,7 @@ protected abstract String initSpecificSolverOptions();
             // close all AMPL related resources here
             this.amplInstance.close();
         }
-        return new InstanceExecResult(solution, -1);
+        return new InstanceExecResult(solution, 0);
     }
 
     protected abstract String initAMPLImplSolverName();

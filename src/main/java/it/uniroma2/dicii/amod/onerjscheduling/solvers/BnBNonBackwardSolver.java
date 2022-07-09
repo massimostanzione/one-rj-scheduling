@@ -24,6 +24,9 @@ public abstract class BnBNonBackwardSolver extends BnBSolver {
             BnBProblem p = this.openBnBProblems.get(0);
             this.openBnBProblems.remove(p);
             p = examineProblem(p, objFn);
+            if(p.isOptimalByLB())
+                return new InstanceExecResult(this.incumbent, this.globLB);
+          //  this.recordForStats(p);
             this.openBnBProblems.addAll(this.generateSubProblems(p, this.checkForExpansion));
           //  this.updateStatuses(p.getStatus());
         }

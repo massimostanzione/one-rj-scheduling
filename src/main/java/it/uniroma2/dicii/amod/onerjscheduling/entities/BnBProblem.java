@@ -2,7 +2,6 @@ package it.uniroma2.dicii.amod.onerjscheduling.entities;
 
 import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
 import it.uniroma2.dicii.amod.onerjscheduling.exceptions.ClosedStatusException;
-import it.uniroma2.dicii.amod.onerjscheduling.exceptions.InvalidFinalStatusException;
 import it.uniroma2.dicii.amod.onerjscheduling.scheduling.Schedule;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus;
 
@@ -56,7 +55,7 @@ public class BnBProblem {
     }
 
     public void setStatus(ProblemStatus status)  {
-        if(this.isFathomed() || this.isExpanded())
+        if((this.isFathomed() || this.isExpanded() || this.isClosed())&&this.status!=status)
                 throw new ClosedStatusException(this.status,status);
         this.status = status;
     }
@@ -70,7 +69,7 @@ public class BnBProblem {
     }
 
     public Schedule getFullInitialSchedule() {
-        Scheduler sch = new Scheduler();//TODO singleton?
+        Scheduler sch = new Scheduler();
         Schedule full = new Schedule();
         full.getItems().addAll(initialSchedule.getItems());
         if (lastAddedJob != null) {
@@ -124,10 +123,14 @@ public class BnBProblem {
     }
 
     public boolean isClosed() {
-        return this.isFathomed()|| this.status==EXPANDED || this.status==OPTIMUM_REACHED;
+        return this.isFathomed()|| this.status==EXPANDED || this.status== OPTIMAL_REACHED;
     }
 
     public boolean isExpandable() {
         return this.status==EXPANDABLE;
+    }
+
+    public boolean isOptimalByLB() {
+        return this.status== OPTIMAL_REACHED;
     }
 }

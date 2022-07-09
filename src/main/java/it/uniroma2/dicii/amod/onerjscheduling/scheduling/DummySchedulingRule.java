@@ -15,7 +15,7 @@ public class DummySchedulingRule extends SchedulingRule {
     }
     @Override
     public Schedule execute(Schedule s, List<Job> jobList) {
-        Scheduler sch = new Scheduler();//TODO singleton?
+        Scheduler sch = new Scheduler();
         Schedule schedule = new Schedule();
         // ordina i job per data di rilascio non decrescente
         jobList.sort(Comparator.comparing(Job::getReleaseDate));

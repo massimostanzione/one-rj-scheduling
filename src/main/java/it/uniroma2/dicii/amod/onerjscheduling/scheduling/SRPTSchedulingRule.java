@@ -19,7 +19,7 @@ public class SRPTSchedulingRule extends SchedulingRule {
     }
     @Override
     public Schedule execute(Schedule initialSchedule, List<Job> jobList) {
-        Scheduler sch = new Scheduler();//TODO singleton?
+        Scheduler sch = new Scheduler();
         int clock = initialSchedule.getCompletionTime();//initialSchedule.getItems().get(initialSchedule.getItems().size()-1).getFinishTime();//TODO in sovrastante?
         Job next = null;
         Schedule schedule = new Schedule();

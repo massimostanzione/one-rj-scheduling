@@ -64,13 +64,17 @@ public class Instance {
         // ... but also process it
         // se bnb salvo il risultato, perché se non riesco a trovare l'ottimo uso quello per
         // stimare l'errore, in assenza dell'ottimo
-        this.bnbRootLB = item.getRootLB();// TODO controllo su ev. già esistente che non può essere diverso
+        if(item.getRootLB()!=0) {
+            if(this.bnbRootLB!=0 && item.getRootLB()!=this.bnbRootLB){
+                throw new RuntimeException("not valid");}
+                this.bnbRootLB = item.getRootLB();
+        }
         // check for timeout
-        if (item.getTime() <= ExternalConfig.getSingletonInstance().getComputationTimeout()) {
+        if (item.getTime() < ExternalConfig.getSingletonInstance().getComputationTimeout()) {
             this.isOptimal = true;
         }
         // check if better result
-        if (item.getSolution() < this.bestObtainedSolution)
+        if (item.getSolution() < this.bestObtainedSolution && item.getSolution()>0)//this.bnbRootLB)
             this.bestObtainedSolution = item.getSolution();
     }
 
@@ -80,12 +84,13 @@ public class Instance {
 
     @Override
     public String toString() {
-        return "DataInstance{" +
+        return //"Report:{" +
                 "\npath='" + path + '\'' +
-                ",\n jobList=" + jobList +
+                //",\n jobList=" + jobList +
                 ",\n bestSolution=" + bestObtainedSolution +
-                ",\n isOptimal=" + isOptimal +
-                ",\n results=" + results +
-                '}';
+                ",\n isOptimal=" + isOptimal
+                //",\n results=" + results +
+                //'}'
+                ;
     }
 }

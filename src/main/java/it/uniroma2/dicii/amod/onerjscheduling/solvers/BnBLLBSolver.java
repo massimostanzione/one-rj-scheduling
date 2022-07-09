@@ -42,6 +42,9 @@ public class BnBLLBSolver extends BnBDFSSolver {
                 else*/
                 if(!p.isVisited())
                     p = this.examineProblem(p, objFn);
+                if(p.isOptimalByLB())
+                    return new InstanceExecResult(this.incumbent, this.globLB);
+              //  this.recordForStats(p);
                 res = p.getSolution();
                // System.out.println("ESAMINATO CON SOLUZIONE: "+p);
                 //ora posso decidere la logica di espansione
@@ -72,6 +75,8 @@ public class BnBLLBSolver extends BnBDFSSolver {
                     //this.openBnBProblems.addAll(this.generateSubProblems(p));
 
                     List<BnBProblem> sub = this.generateSubProblems(p);
+                    if (checkTimeout(start))
+                        return new InstanceExecResult(this.incumbent, this.globLB);
                     if (sub != null){
                         this.openBnBProblems.addAll(sub);
                     //this.allNodes.addAll(sub);

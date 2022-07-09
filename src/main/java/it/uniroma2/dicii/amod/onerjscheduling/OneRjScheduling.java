@@ -5,11 +5,11 @@ import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.OneRjProblem;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjFunctionFactory;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum;
-import it.uniroma2.dicii.amod.onerjscheduling.solvers.AMPLCplexSolver;
-import it.uniroma2.dicii.amod.onerjscheduling.solvers.BnBFIFOSolver;
-import it.uniroma2.dicii.amod.onerjscheduling.solvers.BnBLLBSolver;
+import it.uniroma2.dicii.amod.onerjscheduling.solvers.*;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Objects;
 
 import static it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum.SUM_COMPLETION_TIMES;
@@ -43,34 +43,38 @@ public class OneRjScheduling {
         OneRjProblem problem = new OneRjProblem();
 
         // 1. Problem name (not mandatory)
-        problem.setName("z1-instanceClasses");
+        problem.setName("final");
 
         // 2. Object function
         problem.setObjectFunction(new ObjFunctionFactory().createObjFunction(SUM_COMPLETION_TIMES));
 
         // 3. Data instances
-        problem.addInstance(new Instance("./data/lect22.csv"));
-        problem.addInstance(new Instance("./data/lect22-reversed.csv"));
-        //     problem.addInstance(new Instance("./data/10identical.csv"));
-       // problem.addInstance(new Instance("./data/mortonPentico-ljb12-reduced.csv"));
-        //    problem.addInstance(new Instance("./data/mortonPentico-MINIMAL_LLB_TRIAL.csv"));
-        //      problem.addInstance(new Instance("./data/mortonPentico-ljb12-smallPj.csv"));
-        /*  problem.addInstance(new Instance("./data/mortonPentico-ljb12.csv"));*/
+    /*    problem.addInstance(new Instance("./data/instances/test/lect22.csv"));
+        problem.addInstance(new Instance("./data/instances/test/lect22-reversed.csv"));
+        problem.addInstance(new Instance("./data/instances/test/10identical.csv"));
+        problem.addInstance(new Instance("./data/instances/test/mortonPentico-ljb12-reduced.csv"));
+        problem.addInstance(new Instance("./data/instances/test/mortonPentico-MINIMAL_LLB_TRIAL.csv"));
+        problem.addInstance(new Instance("./data/instances/test/mortonPentico-ljb12-smallPj.csv"));
+        problem.addInstance(new Instance("./data/instances/test/mortonPentico-ljb12.csv"));*/
         problem.loadInstanceDirectory("./data/instances/generated/");
 //problem.loadInstanceDirectory("./data");
         //    problem.addInstance(
         //           new DataInstance("./data/instances/generated/SIZE_SMALL_VARIANCE_SMALL_16.csv"));
         // 4. Solvers
-      //  problem.addOptimumSolver(new AMPLGurobiSolver());
+        problem.addOptimumSolver(new AMPLGurobiSolver());
         problem.addOptimumSolver(new AMPLCplexSolver());
-        //    problem.addRelaxedSolver(new BnBFullSolver());
+            problem.addRelaxedSolver(new BnBFullSolver());
          problem.addRelaxedSolver(new BnBFIFOSolver());
-        //   problem.addRelaxedSolver(new BnBForwardSolver());
+           problem.addRelaxedSolver(new BnBForwardSolver());
          problem.addRelaxedSolver(new BnBLLBSolver());
 
         System.out.println("Done. Starting solving.");
         ExecutionManager execMgr=new ExecutionManager();
+        Instant start= Instant.now();
         execMgr.solve(problem);
+        Instant end=Instant.now();
+        System.out.println("\nExecution finished in "
+        + Duration.between(start, end).toSeconds()+" s ("+Duration.between(start,end).toMinutes()+" min).\nDone.");
     }
 
 
