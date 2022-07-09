@@ -96,6 +96,7 @@ public class ExecutionManager {
                 double avgRelErr = 0;
                 int optimalsCount = 0;
                 Map<ProblemStatus, Double> statusesAvg=new HashMap();
+                double nodesCtr=0;
                 for (Instance report : instanceClass.getInstances()) {
                     for (InstanceExecResult result : report.getResults()) {
                         if (result.getSolverName().equals(solver.getSolverName())) {
@@ -103,6 +104,7 @@ public class ExecutionManager {
                             avgTime += result.getTime();
                             avgAbsErr += result.getSolution() - report.getOptimalOrEstimate();
                             avgRelErr += report.getOptimalOrEstimate() == 0 ? 0 : result.getSolution() / report.getOptimalOrEstimate();
+                            nodesCtr+=result.getTotalVisitedNodes();
                             for(ProblemStatus status:ProblemStatus.values()){
                                 //System.out.println(statusesAvg);
                                // System.out.println();
@@ -130,10 +132,12 @@ public class ExecutionManager {
                 solverPerf.setOptimalsPerc(100*optimalsCount/instanceClass.getInstances().size());
                 solverPerf.setInstancesNo(instanceClass.getInstances().size());
                 for(ProblemStatus status:statusesAvg.keySet()){
-                    System.out.println(statusesAvg.get(status));
+                    //System.out.println(statusesAvg.get(status));
                     statusesAvg.put(status,statusesAvg.get(status)/instanceClass.getInstances().size());
+                    nodesCtr+=statusesAvg.get(status);
                 }
                 solverPerf.setStatusesAvg(statusesAvg);
+                solverPerf.setTotalVisitedNodes(nodesCtr/instanceClass.getInstances().size());
                 //System.out.println(statusesAvg);
                 instanceClass.addSolverPerf(solverPerf);
             }

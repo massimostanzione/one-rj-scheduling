@@ -19,7 +19,7 @@ public abstract class Solver {
 
     public Solver() {
         this.solverName = this.initName();
-        this.statuses=new HashMap<>();
+        this.statuses = new HashMap<>();
     }
     //ObjectFunction objFunction = null;
 
@@ -96,6 +96,13 @@ public abstract class Solver {
         else {*/
         item.setTime(Duration.between(start, end).toMillis());
         item.setStatuses(this.statuses);
+        int nodesCtr = 0;
+        //for (ProblemStatus status : this.statuses.keySet()) {
+        for (int val : item.getStatuses().values()) {
+            nodesCtr +=val;// this.statuses.get(status);
+        }
+        //System.out.println(this.statuses);
+        item.setTotalVisitedNodes(nodesCtr);
         //  }
         boolean timeout = item.getTime() > ExternalConfig.getSingletonInstance().getComputationTimeout();
         printStats(timeout);
