@@ -6,6 +6,7 @@ import it.uniroma2.dicii.amod.onerjscheduling.entities.output.InstanceClass;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.output.InstanceExecResult;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.output.SolverPerformance;
 import it.uniroma2.dicii.amod.onerjscheduling.io.CSVExporterPrinter;
+import it.uniroma2.dicii.amod.onerjscheduling.solvers.AMPLSolver;
 import it.uniroma2.dicii.amod.onerjscheduling.solvers.Solver;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.InstanceGenerator;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.ProblemStatus;
@@ -28,8 +29,9 @@ public class ExecutionManager {
      */
     public void solve(OneRjProblem problem) {
         String name = problem.getName() == null ? "" : "-" + problem.getName() + "-";
-        for (Instance instance : problem.getInstances()) {System.out.println("======================================================="+
-                "\nStarting analysis for the instance "+instance.getPath());
+        for (Instance instance : problem.getInstances()) {
+            System.out.println("=======================================================" +
+                    "\nStarting analysis for the instance " + instance.getPath());
             System.out.println("-------------------------------------------------------");
             for (Solver solver : problem.getOptimumSolvers()) {
                 //solver.setPath(instance.getPath());
@@ -64,7 +66,7 @@ public class ExecutionManager {
             }
             this.toExport.addAll(instance.getResults());
             System.out.println("Analysis finished for this instance.\nFinal solution:\t" + instance.getBestObtainedSolution()
-            +"\nisOptimal:\t\t"+instance.isOptimal());//+"=======================================================");
+                    + "\nisOptimal:\t\t" + instance.isOptimal());//+"=======================================================");
 
 
             //l'instExecResult deve essere aggiunto alla classe di appartenenza
@@ -74,9 +76,9 @@ public class ExecutionManager {
             InstanceClass instClass = this.obtainClass(instance.getPath());
             instClass.addInstance(instance);
         }
-        String outDT=LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        String outDT = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
         CSVExporterPrinter.getSingletonInstance().convertAndExport(this.toExport,
-                "/output/report/report" + name + outDT+ "-executions.csv");
+                "/output/report/report" + name + outDT + "-executions.csv");
 
         //  System.out.println(this.classes);
         // ora che ho raccolto tutte le statistiche
@@ -95,29 +97,34 @@ public class ExecutionManager {
                 double avgAbsErr = 0;
                 double avgRelErr = 0;
                 int optimalsCount = 0;
-                Map<ProblemStatus, Double> statusesAvg=new HashMap();
-                double nodesCtr=0;
+                Map<ProblemStatus, Double> statusesAvg = new HashMap();
+                double nodesCtr = 0;
                 for (Instance report : instanceClass.getInstances()) {
                     for (InstanceExecResult result : report.getResults()) {
                         if (result.getSolverName().equals(solver.getSolverName())) {
-                            if (report.isOptimal()&& result.getSolution()==report.getOptimalOrEstimate()) optimalsCount++;
+                            if (report.isOptimal() && result.getSolution() == report.getOptimalOrEstimate())
+                                optimalsCount++;
                             avgTime += result.getTime();
                             avgAbsErr += result.getSolution() - report.getOptimalOrEstimate();
                             avgRelErr += report.getOptimalOrEstimate() == 0 ? 0 : result.getSolution() / report.getOptimalOrEstimate();
-                            nodesCtr+=result.getTotalVisitedNodes();
-                            for(ProblemStatus status:ProblemStatus.values()){
+                            nodesCtr += result.getTotalVisitedNodes();
+                            for (ProblemStatus status : ProblemStatus.values()) {
                                 //System.out.println(statusesAvg);
-                               // System.out.println();
-                                Double present=result.getStatuses().get(status)==null?0.0:result.getStatuses().get(status);
-                                if (statusesAvg.containsKey(status)) {
-                                    //if(result.getStatuses().get(status)!=null)
-                                    statusesAvg.put(status, statusesAvg.get(status) + present);
-                                    //else
-                                    //    statusesAvg.put(status, statusesAvg.get(status));
+                                // System.out.println();
+                                if (solver instanceof AMPLSolver) {
+                                    statusesAvg.put(status, -1.0);
 
+                                } else {
+                                    Double present = result.getStatuses().get(status) == null ? 0.0 : result.getStatuses().get(status);
+                                    if (statusesAvg.containsKey(status)) {
+                                        //if(result.getStatuses().get(status)!=null)
+                                        statusesAvg.put(status, statusesAvg.get(status) + present);
+                                        //else
+                                        //    statusesAvg.put(status, statusesAvg.get(status));
+
+                                    } else
+                                        statusesAvg.put(status, present);
                                 }
-                                else
-                                    statusesAvg.put(status, present);
                             }
                         }
                     }
@@ -129,15 +136,17 @@ public class ExecutionManager {
                 solverPerf.setAvgAbsoluteError(avgAbsErr);
                 solverPerf.setAvgRelativeError(avgRelErr);
                 solverPerf.setOptimalsCount(optimalsCount);
-                solverPerf.setOptimalsPerc(100*optimalsCount/instanceClass.getInstances().size());
+                solverPerf.setOptimalsPerc(100 * optimalsCount / instanceClass.getInstances().size());
                 solverPerf.setInstancesNo(instanceClass.getInstances().size());
-                for(ProblemStatus status:statusesAvg.keySet()){
+                for (ProblemStatus status : statusesAvg.keySet()) {
                     //System.out.println(statusesAvg.get(status));
-                    statusesAvg.put(status,statusesAvg.get(status)/instanceClass.getInstances().size());
-                    nodesCtr+=statusesAvg.get(status);
+                    if (!(solver instanceof AMPLSolver)) {
+                        statusesAvg.put(status, statusesAvg.get(status) / instanceClass.getInstances().size());
+                        nodesCtr += statusesAvg.get(status);
+                    }
                 }
                 solverPerf.setStatusesAvg(statusesAvg);
-                solverPerf.setTotalVisitedNodes(nodesCtr/instanceClass.getInstances().size());
+                solverPerf.setTotalVisitedNodes(solver instanceof AMPLSolver ? -1 : nodesCtr / instanceClass.getInstances().size());
                 //System.out.println(statusesAvg);
                 instanceClass.addSolverPerf(solverPerf);
             }
@@ -150,7 +159,7 @@ public class ExecutionManager {
                 toExport.add(s);
         }
         CSVExporterPrinter.getSingletonInstance().convertAndExport(this.classes,
-                "/output/report/report" + name +outDT + ".csv");
+                "/output/report/report" + name + outDT + ".csv");
         System.out.println("Done.");
     }
 

@@ -43,16 +43,16 @@ public class OneRjScheduling {
         OneRjProblem problem = new OneRjProblem();
 
         // 1. Problem name (not mandatory)
-        problem.setName("final");
+        problem.setName("final-2min");
 
         // 2. Object function
         problem.setObjectFunction(new ObjFunctionFactory().createObjFunction(SUM_COMPLETION_TIMES));
 
         // 3. Data instances
-    /*    problem.addInstance(new Instance("./data/instances/test/lect22.csv"));
+     /*     problem.addInstance(new Instance("./data/instances/test/lect22.csv"));
         problem.addInstance(new Instance("./data/instances/test/lect22-reversed.csv"));
-        problem.addInstance(new Instance("./data/instances/test/10identical.csv"));
-        problem.addInstance(new Instance("./data/instances/test/mortonPentico-ljb12-reduced.csv"));
+     //  problem.addInstance(new Instance("./data/instances/test/10identical.csv"));
+       problem.addInstance(new Instance("./data/instances/test/mortonPentico-ljb12-reduced.csv"));
         problem.addInstance(new Instance("./data/instances/test/mortonPentico-MINIMAL_LLB_TRIAL.csv"));
         problem.addInstance(new Instance("./data/instances/test/mortonPentico-ljb12-smallPj.csv"));
         problem.addInstance(new Instance("./data/instances/test/mortonPentico-ljb12.csv"));*/
@@ -62,7 +62,7 @@ public class OneRjScheduling {
         //           new DataInstance("./data/instances/generated/SIZE_SMALL_VARIANCE_SMALL_16.csv"));
         // 4. Solvers
         problem.addOptimumSolver(new AMPLGurobiSolver());
-        problem.addOptimumSolver(new AMPLCplexSolver());
+       problem.addOptimumSolver(new AMPLCplexSolver());
             problem.addRelaxedSolver(new BnBFullSolver());
          problem.addRelaxedSolver(new BnBFIFOSolver());
            problem.addRelaxedSolver(new BnBForwardSolver());
@@ -72,6 +72,7 @@ public class OneRjScheduling {
         ExecutionManager execMgr=new ExecutionManager();
         Instant start= Instant.now();
         execMgr.solve(problem);
+        System.out.println("=======================================================");
         Instant end=Instant.now();
         System.out.println("\nExecution finished in "
         + Duration.between(start, end).toSeconds()+" s ("+Duration.between(start,end).toMinutes()+" min).\nDone.");

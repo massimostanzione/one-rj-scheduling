@@ -27,14 +27,14 @@ public abstract class BnBNonBackwardSolver extends BnBSolver {
             if(p.isOptimalByLB())
                 return new InstanceExecResult(this.incumbent, this.globLB);
           //  this.recordForStats(p);
-            this.openBnBProblems.addAll(this.generateSubProblems(p, this.checkForExpansion));
+            this.openBnBProblems.addAll(this.generateSubProblems(p, this.checkForExpansion, start));
           //  this.updateStatuses(p.getStatus());
         }
         return new InstanceExecResult(this.incumbent, this.globLB);
     }
 
     @Override
-    protected List<BnBProblem> generateSubProblems(BnBProblem p, boolean checkForExpansion) {
+    protected List<BnBProblem> generateSubProblems(BnBProblem p, boolean checkForExpansion, Instant start) {
         List<BnBProblem> ret = new ArrayList<>();
         if (p.isExpandable() || !checkForExpansion) {
             // esclusione del livello delle foglie

@@ -4,8 +4,10 @@ import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.BnBProblem;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Job;
+import it.uniroma2.dicii.amod.onerjscheduling.entities.output.InstanceExecResult;
 import it.uniroma2.dicii.amod.onerjscheduling.scheduling.Schedule;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -21,17 +23,19 @@ public abstract class BnBDFSSolver extends BnBSolver {
         this.potentiallyExpandableInCurrentLevel.add(this.openBnBProblems.get(0));
     }
 
-    protected List<BnBProblem> generateSubProblems(BnBProblem p) {
-        return this.generateSubProblems(p, true);
+    protected List<BnBProblem> generateSubProblems(BnBProblem p, Instant start) {
+        return this.generateSubProblems(p, true, start);
     }
 
     @Override
-    protected List<BnBProblem> generateSubProblems(BnBProblem p, boolean checkForExpansion) {
+    protected List<BnBProblem> generateSubProblems(BnBProblem p, boolean checkForExpansion, Instant start) {
         //System.out.println("cerco di generare sottoproblemi per "+p);
         List<BnBProblem> ret = new ArrayList<>();
         Scheduler sch = new Scheduler();
         int skip = 0;
         this.jobList.sort(Comparator.comparing(Job::getId));
+        if (checkTimeout(start))
+            return ret;
         BnBProblem next = null;
         Boolean goBack = null;
         // se non è una foglia ho ancora possibilità di scendere, e vedo se posso farlo:
@@ -43,6 +47,8 @@ public abstract class BnBDFSSolver extends BnBSolver {
                 // genero la sequenza
                 Schedule s = new Schedule();
                 for (Job j : this.jobList) {
+                    if (checkTimeout(start))
+                        return ret;
                     this.levelUp = null;
                     if (!p.getFullInitialSchedule().contains(j)) {
                         s.getItems().removeAll(s.getItems());
@@ -51,6 +57,8 @@ public abstract class BnBDFSSolver extends BnBSolver {
                         // se la schedula che ho trovato non è stata ancora esaminata, allora va bene
                         if (!sch.scheduleInProblemListByFullInitSchedule(next.getFullInitialSchedule(), this.potentiallyExpandableInCurrentLevel)) {
                             //  scendo di figlio
+                            if (checkTimeout(start))
+                                return ret;
                             this.levelUp = false;
                             //return next;
                             //System.out.println("Nuovo sottoproblema: "+next);

@@ -104,7 +104,7 @@ public abstract class Solver {
         //System.out.println(this.statuses);
         item.setTotalVisitedNodes(nodesCtr);
         //  }
-        boolean timeout = item.getTime() > ExternalConfig.getSingletonInstance().getComputationTimeout();
+        boolean timeout = item.getTime() >= ExternalConfig.getSingletonInstance().getComputationTimeout();
         printStats(timeout);
         return item;
     }

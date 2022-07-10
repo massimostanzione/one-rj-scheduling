@@ -31,6 +31,8 @@ public class BnBLLBSolver extends BnBDFSSolver {
             min = Integer.MAX_VALUE;
             int res = -1;
             for (BnBProblem p : this.openBnBProblems) {
+                if (checkTimeout(start))
+                    return new InstanceExecResult(this.incumbent, this.globLB);
            /*     CONDIZIONE MAI VERIFICATA
            if (p.getSolution() != null) {
 
@@ -42,6 +44,8 @@ public class BnBLLBSolver extends BnBDFSSolver {
                 else*/
                 if(!p.isVisited())
                     p = this.examineProblem(p, objFn);
+                if (checkTimeout(start))
+                    return new InstanceExecResult(this.incumbent, this.globLB);
                 if(p.isOptimalByLB())
                     return new InstanceExecResult(this.incumbent, this.globLB);
               //  this.recordForStats(p);
@@ -65,6 +69,8 @@ public class BnBLLBSolver extends BnBDFSSolver {
             this.openBnBProblems.removeAll(this.openBnBProblems);
             // System.out.println("Min = "+min);
             for (BnBProblem p : this.potentiallyExpandableInCurrentLevel) {
+                if (checkTimeout(start))
+                    return new InstanceExecResult(this.incumbent, this.globLB);
                 //this.openBnBProblems.add(p);// NO!
                 // System.out.println("\nguardo "+p.getSolution()+" avente schedula "+p.getFullInitialSchedule());
                 if (p.getSolution().equals(min) || p.isRoot()) {
@@ -74,7 +80,7 @@ public class BnBLLBSolver extends BnBDFSSolver {
                     //this.openBnBProblems.add(p);
                     //this.openBnBProblems.addAll(this.generateSubProblems(p));
 
-                    List<BnBProblem> sub = this.generateSubProblems(p);
+                    List<BnBProblem> sub = this.generateSubProblems(p, start);
                     if (checkTimeout(start))
                         return new InstanceExecResult(this.incumbent, this.globLB);
                     if (sub != null){

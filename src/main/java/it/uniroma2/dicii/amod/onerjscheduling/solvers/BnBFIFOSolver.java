@@ -36,7 +36,7 @@ public class BnBFIFOSolver extends BnBDFSSolver {
             }
            // this.recordForStats(p);
             if(!p.isClosed()){
-            List<BnBProblem> sub = this.generateSubProblems(p);
+            List<BnBProblem> sub = this.generateSubProblems(p, start);
             if (sub != null)
                 this.openBnBProblems.addAll(sub);}
             //this.allNodes.addAll(sub);

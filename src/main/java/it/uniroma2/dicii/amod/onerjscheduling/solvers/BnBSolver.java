@@ -153,7 +153,7 @@ public abstract class BnBSolver extends Solver {
             this.setJobList(DataDAO.getSingletonInstance().getDataInstances(path));
         }
     */
-    protected abstract List<BnBProblem> generateSubProblems(BnBProblem p, boolean checkForExpansion);
+    protected abstract List<BnBProblem> generateSubProblems(BnBProblem p, boolean checkForExpansion, Instant start);
 
     @Override
     protected void printStats(boolean timeout) {
