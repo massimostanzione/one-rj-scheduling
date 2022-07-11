@@ -30,6 +30,9 @@ public class ExecutionManager {
     public void solve(OneRjProblem problem) {
         String name = problem.getName() == null ? "" : "-" + problem.getName() + "-";
         for (Instance instance : problem.getInstances()) {
+            List<InstanceExecResult> results = new ArrayList<>();
+            List<SolverThread> solverThreads = new ArrayList<>();
+            List<Thread> threads = new ArrayList<>();
             System.out.println("=======================================================" +
                     "\nStarting analysis for the instance " + instance.getPath());
             System.out.println("-------------------------------------------------------");
@@ -42,14 +45,35 @@ public class ExecutionManager {
                         + "\tSolver:\t\t" + solver.initName() + "\n"
                         + "It may take a while, please wait...\n");
                 //instance.getResults().add(solver.solve());
-                InstanceExecResult item = solver.solve(problem.getObjectFunction(), instance);
-                item.setPath(instance.getPath());
-                instance.addResult(item);
+
+                SolverThread foo = new SolverThread(solver, problem.getObjectFunction(), instance);
+                solverThreads.add(foo);
+                Thread thread = new Thread(foo);
+                threads.add(thread);
+                thread.start();
+
+            }
+            try {
+                for (Thread thread : threads) {
+                    thread.join();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            //   InstanceExecResult item = solver.solve(problem.getObjectFunction(), instance);
+
+            for (SolverThread foo : solverThreads) {
+                // SolverThread foo = thread.getClass();
+                InstanceExecResult result = foo.getResult();
+
+                // item.setPath(instance.getPath());
+                instance.addResult(result);
                 System.out.println("Solution:\t\t" + instance.getResults().get(instance.getResults().size() - 1).getSolution());
                 System.out.println("Time elapsed:\t" + instance.getResults().get(instance.getResults().size() - 1).getTime() + " ms");
                 System.out.println("-------------------------------------------------------");
             }
-            for (Solver solver : problem.getRelaxedSolvers()) {
+                 for (Solver solver : problem.getRelaxedSolvers()) {
                 //solver.setPath(instance.getPath());
                 //solver.setObjFunction(problem.getObjectFunction());
                 System.out.println("Determining lower bound for the previous problem via preemptive relaxation\n"

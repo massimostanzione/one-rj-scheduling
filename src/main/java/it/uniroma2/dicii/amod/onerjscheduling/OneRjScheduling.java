@@ -43,7 +43,7 @@ public class OneRjScheduling {
         OneRjProblem problem = new OneRjProblem();
 
         // 1. Problem name (not mandatory)
-        problem.setName("final-2min");
+        problem.setName("MULTITHREAD-studioRj-small");
 
         // 2. Object function
         problem.setObjectFunction(new ObjFunctionFactory().createObjFunction(SUM_COMPLETION_TIMES));
@@ -63,7 +63,7 @@ public class OneRjScheduling {
         // 4. Solvers
         problem.addOptimumSolver(new AMPLGurobiSolver());
        problem.addOptimumSolver(new AMPLCplexSolver());
-            problem.addRelaxedSolver(new BnBFullSolver());
+            problem.addOptimumSolver(new BnBFullSolver());
          problem.addRelaxedSolver(new BnBFIFOSolver());
            problem.addRelaxedSolver(new BnBForwardSolver());
          problem.addRelaxedSolver(new BnBLLBSolver());
@@ -71,7 +71,11 @@ public class OneRjScheduling {
         System.out.println("Done. Starting solving.");
         ExecutionManager execMgr=new ExecutionManager();
         Instant start= Instant.now();
+
+
         execMgr.solve(problem);
+
+
         System.out.println("=======================================================");
         Instant end=Instant.now();
         System.out.println("\nExecution finished in "
