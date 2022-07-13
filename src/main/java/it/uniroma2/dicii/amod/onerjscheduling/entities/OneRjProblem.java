@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class OneRjProblem {
     private final List<Instance> instances = new ArrayList<>();
-    private final List<Solver> optimumSolvers = new ArrayList<>();
+    private final List<Solver> optimalSolvers = new ArrayList<>();
     private final List<Solver> relaxedSolvers = new ArrayList<>();
     private String name;                                        // optional
     private ObjectiveFunction objectiveFunction;
@@ -37,12 +37,12 @@ public class OneRjProblem {
         return instances;
     }
 
-    public List<Solver> getOptimumSolvers() {
-        return optimumSolvers;
+    public List<Solver> getOptimalSolvers() {
+        return optimalSolvers;
     }
 
-    public void addOptimumSolver(Solver optimumSolver) {
-        this.optimumSolvers.add(optimumSolver);
+    public void addOptimalSolver(Solver optimalSolver) {
+        this.optimalSolvers.add(optimalSolver);
     }
 
     public List<Solver> getRelaxedSolvers() {

@@ -56,7 +56,7 @@ public class ExecutionManager {
             // Optimal (commercial/AMPL) solvers and BnB "Full" solver are the ones that
             // use the majority of the execution time, often reaching timeout,
             // so run them simultaneously in a pool thread
-            for (Solver solver : problem.getOptimumSolvers()) {
+            for (Solver solver : problem.getOptimalSolvers()) {
                 System.out.println("Solving\n"
                         + "\tProblem:\t1|r_j|" + problem.getObjectFunction().getMathNotation() + "\n"
                         + "\tInstance:\t" + instance.getPath() + "\n"
@@ -168,7 +168,7 @@ public class ExecutionManager {
         List<SolverPerformance> toExport = new ArrayList<>();
         for (InstanceClass instanceClass : this.classes) {
             List<Solver> solvers = new ArrayList<>();
-            solvers.addAll(problem.getOptimumSolvers());
+            solvers.addAll(problem.getOptimalSolvers());
             solvers.addAll(problem.getRelaxedSolvers());
             for (Solver solver : solvers) {
                 SolverPerformance solverPerf = new SolverPerformance();

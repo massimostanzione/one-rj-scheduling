@@ -53,9 +53,9 @@ public class OneRjScheduling {
         problem.loadInstanceDirectory("./data/instances/generated/");
 
         // 4. Solvers
-        problem.addOptimumSolver(new AMPLGurobiSolver());
-        problem.addOptimumSolver(new AMPLCplexSolver());
-        problem.addOptimumSolver(new BnBFullSolver());
+        problem.addOptimalSolver(new AMPLGurobiSolver());
+        problem.addOptimalSolver(new AMPLCplexSolver());
+        problem.addOptimalSolver(new BnBFullSolver());
         problem.addRelaxedSolver(new BnBFIFOSolver());
         problem.addRelaxedSolver(new BnBForwardSolver());
         problem.addRelaxedSolver(new BnBLLBSolver());

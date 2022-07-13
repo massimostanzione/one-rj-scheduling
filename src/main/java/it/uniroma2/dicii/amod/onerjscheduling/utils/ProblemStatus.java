@@ -39,7 +39,7 @@ public enum ProblemStatus {
     FATHOMED_BOUNDING,
 
     /**
-     * Node visited and closed because guaranteed optimum was reached.
+     * Node visited and closed because guaranteed optimal was reached.
      */
     OPTIMAL_REACHED
 }
