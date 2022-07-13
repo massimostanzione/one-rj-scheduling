@@ -31,10 +31,6 @@ public abstract class AMPLSolver extends Solver {
 
     protected abstract String initSpecificSolverOptions();
 
-    public AMPL getAmplInstance() {
-        return this.amplInstance;
-    }
-
     @Override
     public InstanceExecResult solveExecutive(Instant start, ObjectiveFunction objFn, Instance instance) {
         int solution = -1;
