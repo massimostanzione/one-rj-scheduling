@@ -1,9 +1,12 @@
 package it.uniroma2.dicii.amod.onerjscheduling.entities;
 
-import it.uniroma2.dicii.amod.onerjscheduling.utils.ExportableAsDatasetRecord;
+import it.uniroma2.dicii.amod.onerjscheduling.io.ExportableAsDatasetRecord;
 
 import java.util.List;
 
+/**
+ * Class modeling a single job.
+ */
 public class Job extends ExportableAsDatasetRecord {
     private final int id;
     private final int releaseDate;

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Simple utility class used to convert .txt instances from TODO
+ * Simple utility class used to convert .txt instances from Morto-nPentico instance site.
  */
 public class MortonPenticoInstanceConv {
 
@@ -26,11 +26,11 @@ public class MortonPenticoInstanceConv {
         while ((myLine = bufRead.readLine()) != null) {
             pj = 0;
             String[] lineArr = myLine.split(" ");
-            // salta la prima riga (intestazione)
+            // skip first row (header)
             if (lineArr.length > 3) {
                 i++;
                 // compute the total processing time
-                for (int index = 5; index <= 8 + Integer.parseInt(lineArr[3])-4; index += 2) {
+                for (int index = 5; index <= 8 + Integer.parseInt(lineArr[3]) - 4; index += 2) {
                     pj += Integer.parseInt(lineArr[index]);
                 }
                 dataLines.add(new String[]
@@ -54,7 +54,6 @@ public class MortonPenticoInstanceConv {
 
     public String convertToCSV(String[] data) {
         return Stream.of(data)
-                // .map(this::convertToCSV)
                 .collect(Collectors.joining(","));
     }
 }

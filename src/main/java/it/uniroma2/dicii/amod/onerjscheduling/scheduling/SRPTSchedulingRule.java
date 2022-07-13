@@ -3,7 +3,6 @@ package it.uniroma2.dicii.amod.onerjscheduling.scheduling;
 import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Job;
 import it.uniroma2.dicii.amod.onerjscheduling.exceptions.InvalidTimeException;
-import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.SchedulingRuleEnum;
 
 import java.util.ArrayList;
@@ -11,36 +10,41 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * SRPT (Shortest Remaining Time First) scheduling rule.
+ * It is assigned to the <code>TotalCompletionTime</code> objective function.
+ */
 public class SRPTSchedulingRule extends SchedulingRule {
 
     @Override
     public void initName() {
         this.name = SchedulingRuleEnum.RULE_SRPT;
     }
+
     @Override
     public Schedule execute(Schedule initialSchedule, List<Job> jobList) {
         Scheduler sch = new Scheduler();
-        int clock = initialSchedule.getCompletionTime();//initialSchedule.getItems().get(initialSchedule.getItems().size()-1).getFinishTime();//TODO in sovrastante?
+        int clock = initialSchedule.getCompletionTime();
         Job next = null;
         Schedule schedule = new Schedule();
         schedule.getItems().addAll(initialSchedule.getItems());
         List<Integer> events = new ArrayList<>();
-        // riempio l'array degli eventi:
-        // - istanti di rilascio (release time)
-        // - istanti di completamento:
-        // -- per i job che vengono man mano schedulati lo faccio più avanti
-        // -- per i job che sono nella schedula FISSA: dopo
+        // fill the event arrays with:
+        // - release times
+        // - completion times:
+        // -- jobs that will be scheduled after fixed schedule: see next block
+        // -- jobs that already are into the fixed schedule: processing now
         for (Job j : jobList) {
-            // ignoro tutto ciò che succede durante la schedula fissa
+            // ignoring all that is happening during the fixed schedule, moving the clock forward
             if (j.getReleaseDate() > schedule.getCompletionTime()
-            && !events.contains(j.getReleaseDate())) {
+                    && !events.contains(j.getReleaseDate())) {
                 events.add(j.getReleaseDate());
             }
         }
-        // (segue)
-        // -- per i job che sono nella schedula FISSA:
-        // --- MI SERVE SOLO IL COMPLETION TIME DELLA SOTTOSEQUENZA,
-        //     tutto ciò che termina nel mezzo non mi interessa
+        // (from above)
+        // -- jobs that already are into the fixed schedule:
+        // --- we only need completion time of the subsequence,
+        //     ignoring whatever ends in the meanwhile
         if (!events.contains(schedule.getCompletionTime())) {
             events.add(schedule.getCompletionTime());
         }
@@ -49,19 +53,16 @@ public class SRPTSchedulingRule extends SchedulingRule {
         do {
             clock = events.get(eventIndex);
             next = pickJob(jobList, clock, schedule);
-            // potrei avere idle
+            // could have idle times
             if (next != null) {
-                // ora che ho il prossimo da schedulare, lo faccio:
-                schedule = sch.schedulePmnt(schedule, clock, next, jobList, events);
+                // next-to-schedule is ready to schedule
+                schedule = sch.schedulePmnt(schedule, clock, next, events);
                 ScheduleItem item = schedule.getItems().get(schedule.getItems().size() - 1);
-                // aggiorno l'array degli eventi con l'istante di completamento
-                // del processo appena schedulato
-                // (la prossima esecuzione avrà clock pari ad esso)
+                // update events clock
                 if (!events.contains(item.getFinishTime())) {
                     events.add(item.getFinishTime());
                     Collections.sort(events);
                 }
-
             }
             eventIndex++;
         }
@@ -69,32 +70,30 @@ public class SRPTSchedulingRule extends SchedulingRule {
         return schedule;
     }
 
+    /**
+     * Select next job to schedule
+     *
+     * @param jobList  job list where look into for the next job
+     * @param clock    time instant for scheduling
+     * @param schedule schedule already present
+     * @return next job to schedule
+     */
     private Job pickJob(List<Job> jobList, int clock, Schedule schedule) {
         Job next = null;
         List<Job> releasedJobs = getReleasedJobs(jobList, clock);
-        //System.out.println("In questo momento (" + clock + ") i jobs rilasciati sono: " + releasedJobs);
         int srpt = -1;
         int minSrpt = Integer.MAX_VALUE;
         for (Job j : releasedJobs) {
             if (!schedule.contains(j) || (schedule.contains(j) && computeRemainingTime(j, schedule) > 0)) {
                 srpt = computeRemainingTime(j, schedule);
                 if (srpt < minSrpt) {
-                    // lo aggiorno come possibile candidato
+                    // mark it as eligible for scheduling
                     next = j;
                     minSrpt = srpt;
                 }
             }
         }
         return next;
-    }
-
-    private int getNextEventIndex(Integer clock, List<Integer> events) {
-        int index = -1;
-        for (Integer event : events) {
-            index++;
-            if (event == clock) return index + 1;
-        }
-        return index;
     }
 
     private List<Job> getReleasedJobs(List<Job> jobList, Integer clock) {

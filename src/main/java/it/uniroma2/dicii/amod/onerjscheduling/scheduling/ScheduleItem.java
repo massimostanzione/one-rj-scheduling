@@ -2,11 +2,14 @@ package it.uniroma2.dicii.amod.onerjscheduling.scheduling;
 
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Job;
 
+/**
+ * This class contains information about a single job execution, wheter it is partial or complete.
+ */
 public class ScheduleItem {
     private Job j;
     private int startTime;
     private int finishTime;
-    private Boolean preempted=null;
+    private Boolean preempted = null;
 
     public Job getJob() {
         return j;
@@ -15,6 +18,7 @@ public class ScheduleItem {
     public void setJob(Job j) {
         this.j = j;
     }
+
     public int getStartTime() {
         return startTime;
     }

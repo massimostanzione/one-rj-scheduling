@@ -1,7 +1,5 @@
 package it.uniroma2.dicii.amod.onerjscheduling.io;
 
-import it.uniroma2.dicii.amod.onerjscheduling.utils.ExportableAsDatasetRecord;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

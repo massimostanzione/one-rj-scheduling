@@ -1,7 +1,6 @@
 package it.uniroma2.dicii.amod.onerjscheduling;
 
 import it.uniroma2.dicii.amod.onerjscheduling.control.ExecutionManager;
-import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.OneRjProblem;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjFunctionFactory;
 import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunctionEnum;
@@ -49,40 +48,27 @@ public class OneRjScheduling {
         problem.setObjectFunction(new ObjFunctionFactory().createObjFunction(SUM_COMPLETION_TIMES));
 
         // 3. Data instances
-     /*     problem.addInstance(new Instance("./data/instances/test/lect22.csv"));
-        problem.addInstance(new Instance("./data/instances/test/lect22-reversed.csv"));
-     //  problem.addInstance(new Instance("./data/instances/test/10identical.csv"));
-       problem.addInstance(new Instance("./data/instances/test/mortonPentico-ljb12-reduced.csv"));
-        problem.addInstance(new Instance("./data/instances/test/mortonPentico-MINIMAL_LLB_TRIAL.csv"));
-        problem.addInstance(new Instance("./data/instances/test/mortonPentico-ljb12-smallPj.csv"));
-        problem.addInstance(new Instance("./data/instances/test/mortonPentico-ljb12.csv"));*/
+        // uncomment the following row if you want to add a specific instance, instead of a folder.
+        // problem.addInstance(new Instance("./data/instances/test/10identical.csv"));
         problem.loadInstanceDirectory("./data/instances/generated/");
-//problem.loadInstanceDirectory("./data");
-        //    problem.addInstance(
-        //           new DataInstance("./data/instances/generated/SIZE_SMALL_VARIANCE_SMALL_16.csv"));
+
         // 4. Solvers
         problem.addOptimumSolver(new AMPLGurobiSolver());
-       problem.addOptimumSolver(new AMPLCplexSolver());
-            problem.addOptimumSolver(new BnBFullSolver());
-         problem.addRelaxedSolver(new BnBFIFOSolver());
-           problem.addRelaxedSolver(new BnBForwardSolver());
-         problem.addRelaxedSolver(new BnBLLBSolver());
+        problem.addOptimumSolver(new AMPLCplexSolver());
+        problem.addOptimumSolver(new BnBFullSolver());
+        problem.addRelaxedSolver(new BnBFIFOSolver());
+        problem.addRelaxedSolver(new BnBForwardSolver());
+        problem.addRelaxedSolver(new BnBLLBSolver());
 
         System.out.println("Done. Starting solving.");
-        ExecutionManager execMgr=new ExecutionManager();
-        Instant start= Instant.now();
-
-
+        ExecutionManager execMgr = new ExecutionManager();
+        Instant start = Instant.now();
         execMgr.solve(problem);
-
-
         System.out.println("=======================================================");
-        Instant end=Instant.now();
+        Instant end = Instant.now();
         System.out.println("\nExecution finished in "
-        + Duration.between(start, end).toSeconds()+" s ("+Duration.between(start,end).toMinutes()+" min).\nDone.");
+                + Duration.between(start, end).toSeconds() + " s (" + Duration.between(start, end).toMinutes() + " min).\nDone.");
     }
-
-
 }
 
 

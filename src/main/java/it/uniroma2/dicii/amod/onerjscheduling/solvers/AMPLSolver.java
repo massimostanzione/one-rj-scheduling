@@ -5,7 +5,7 @@ import com.ampl.Environment;
 import com.ampl.Objective;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.output.InstanceExecResult;
-import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
+import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectiveFunction;
 import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
 
 import java.io.IOException;
@@ -13,68 +13,67 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 
+/**
+ * AMPL commercial solver, to be specialized with specific AMPL solver.
+ */
 public abstract class AMPLSolver extends Solver {
+    private final String specificSolverOptionsPrefix;
+    private final String specificSolverOptions;
     private AMPL amplInstance;
-    private String specificSolverOptionsPrefix;
-    private String specificSolverOptions;
+
+    public AMPLSolver() {
+        this.specificSolverOptions = this.initSpecificSolverOptions();
+        this.specificSolverOptionsPrefix = this.initSpecificSolverOptionsPrefix();
+        this.initializeSolverParams(null);
+    }
+
+    protected abstract String initSpecificSolverOptionsPrefix();
+
+    protected abstract String initSpecificSolverOptions();
 
     public AMPL getAmplInstance() {
         return this.amplInstance;
     }
-    public AMPLSolver() {
-        this.specificSolverOptions=this.initSpecificSolverOptions();
-        this.specificSolverOptionsPrefix=this.initSpecificSolverOptionsPrefix();
-        this.initializeSolverParams(null);
-    }
-protected abstract String initSpecificSolverOptionsPrefix();
-protected abstract String initSpecificSolverOptions();
-
-    public void initializeSolverParams(Instance instance) {
-        // serve anche da reset nel caso una precedente esecuzione dovesse andare in timeout
-        Environment env = new Environment(ExternalConfig.getSingletonInstance().getAmplPath());
-        this.amplInstance = new AMPL(env);
-    }
 
     @Override
-    public InstanceExecResult solveExecutive(Instant start, ObjectFunction objFn, Instance instance) {
+    public InstanceExecResult solveExecutive(Instant start, ObjectiveFunction objFn, Instance instance) {
         int solution = -1;
         try {
+            // load AMPL file containing all the AMPL instructions
             this.amplInstance.setOption("solver", this.initAMPLImplSolverName());
             this.amplInstance.setOption(this.specificSolverOptionsPrefix, this.specificSolverOptions);
             this.amplInstance.eval(this.loadAMPLfile("./src/ampl/1-rj-sumcj-java.ampl", instance.getPath()));
-            //this.amplInstance.eval("table jobs IN \"amplcsv\" \"" + instance.getPath() + "\": jobs <- [JOB_ID],RELEASE_DATE,PROCESSING_TIME;");
-           // this.amplInstance.eval(this.loadAMPLfile("./src/ampl/java/1-rj-sumcj-java.ampl"));
-           // this.amplInstance.eval("read table jobs;");
-          //  this.amplInstance.eval("let M:=sum{j in jobs}(PROCESSING_TIME[j])+max{j in jobs}(RELEASE_DATE[j]);");
-           // this.amplInstance.eval("printf \"Big-M set to %d\\n\", M ;");
-           // this.amplInstance.solve();
-          //  this.amplInstance.eval("display RELEASE_DATE,PROCESSING_TIME,START_TIME,COMPLETION_TIME;");
             Objective objFnVal = this.amplInstance.getObjective(objFn.getAmplString());
             solution = (int) objFnVal.get().value();
         } catch (RuntimeException e) {
             e.printStackTrace();
-           /* System.out.println("Timeout.");
-            this.amplInstance.close();
-            return -1;*/
         } finally {
-            // close all AMPL related resources here
             this.amplInstance.close();
         }
         return new InstanceExecResult(solution, 0);
     }
 
     protected abstract String initAMPLImplSolverName();
-private String loadAMPLfile(String filePath, String instPath){
-String script="";
-    Path file = Path.of(filePath);
-    try {
-        script = Files.readString(file);
-    } catch (IOException e) {
-        e.printStackTrace();
+
+    public void initializeSolverParams(Instance instance) {
+        // also works as "reset" if a previous execution reaches timeout
+        Environment env = new Environment(ExternalConfig.getSingletonInstance().getAmplPath());
+        this.amplInstance = new AMPL(env);
     }
-    return script.replace("$PATH", "\""+instPath+"\"");
-}
+
     @Override
     public void printStats(boolean timeout) {
+        // nothing needed, specialized solvers already print execution details by default.
+    }
+
+    private String loadAMPLfile(String filePath, String instPath) {
+        String script = "";
+        Path file = Path.of(filePath);
+        try {
+            script = Files.readString(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return script.replace("$PATH", "\"" + instPath + "\"");
     }
 }

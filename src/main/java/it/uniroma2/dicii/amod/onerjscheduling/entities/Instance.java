@@ -7,14 +7,17 @@ import it.uniroma2.dicii.amod.onerjscheduling.utils.ExternalConfig;
 import java.util.ArrayList;
 import java.util.List;
 
-// è il contenitore dei risultati di puiù solver sulla stessa istanza
+/**
+ * A single job instance, also working as <i>container</i> for the execution results <code>InstanceExecResults</code>
+ * of all the solver for the specific istance.
+ */
 public class Instance {
     private final String path;
     private final List<Job> jobList;
+    private final List<InstanceExecResult> results;
     private int bestObtainedSolution;
     private int bnbRootLB;
     private boolean isOptimal;
-    private List<InstanceExecResult> results;
 
     public Instance(String path) {
         this.path = path;
@@ -23,6 +26,10 @@ public class Instance {
         this.isOptimal = false;
         this.results = new ArrayList<>();
         this.jobList = this.extractJobs();
+    }
+
+    private List<Job> extractJobs() {
+        return DataDAO.getSingletonInstance().getDataInstances(this.path);
     }
 
     public int getBestObtainedSolution() {
@@ -45,19 +52,16 @@ public class Instance {
         return jobList;
     }
 
-    /*
-        public void setJobList(List<Job> jobList) {
-            this.jobList = jobList;
-        }
-    */
     public List<InstanceExecResult> getResults() {
         return results;
     }
 
-    public void setResults(List<InstanceExecResult> results) {
-        this.results = results;
-    }
-
+    /**
+     * Append the single <code>item</code> execution result, and also process it in order to update
+     * some attributes about the specific instance.
+     *
+     * @param item execution result to be appended.
+     */
     public void addResult(InstanceExecResult item) {
         // append the item to the results list...
         this.results.add(item);
@@ -66,7 +70,7 @@ public class Instance {
         // stimare l'errore, in assenza dell'ottimo
         if (item.getRootLB() != 0) {
             if (this.bnbRootLB != 0 && item.getRootLB() != this.bnbRootLB) {
-                throw new RuntimeException("not valid, current LB = "+this.bnbRootLB+" vs. obtained "+item.getRootLB());
+                throw new RuntimeException("not valid, current LB = " + this.bnbRootLB + " vs. obtained " + item.getRootLB());
             }
             this.bnbRootLB = item.getRootLB();
         }
@@ -79,19 +83,10 @@ public class Instance {
             this.bestObtainedSolution = item.getSolution();
     }
 
-    private List<Job> extractJobs() {
-        return DataDAO.getSingletonInstance().getDataInstances(this.path);
-    }
-
     @Override
     public String toString() {
-        return //"Report:{" +
-                "\npath='" + path + '\'' +
-                        //",\n jobList=" + jobList +
-                        ",\n bestSolution=" + bestObtainedSolution +
-                        ",\n isOptimal=" + isOptimal
-                //",\n results=" + results +
-                //'}'
-                ;
+        return "\npath='" + path + '\'' +
+                ",\n bestSolution=" + bestObtainedSolution +
+                ",\n isOptimal=" + isOptimal;
     }
 }

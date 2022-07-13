@@ -7,11 +7,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.prefs.Preferences;
 
+/**
+ * A parser and container for the external configuration parameters obtainable from <code>config.ini</code> file.
+ */
 public class ExternalConfig {
     private static ExternalConfig inst = null;
     private final String amplPath;
     private final Integer computationTimeout;
     private final boolean showElapsedTimeOnTimeout;
+
     private ExternalConfig() {
         Ini ini = null;
         try {
@@ -30,10 +34,6 @@ public class ExternalConfig {
             inst = new ExternalConfig();
         }
         return inst;
-    }
-
-    public boolean getShowElapsedTimeOnTimeout() {
-        return showElapsedTimeOnTimeout;
     }
 
     public String getAmplPath() {

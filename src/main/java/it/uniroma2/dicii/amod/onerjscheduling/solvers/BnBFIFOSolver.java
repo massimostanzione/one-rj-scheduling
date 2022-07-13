@@ -4,118 +4,43 @@ import it.uniroma2.dicii.amod.onerjscheduling.control.Scheduler;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.BnBProblem;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.Instance;
 import it.uniroma2.dicii.amod.onerjscheduling.entities.output.InstanceExecResult;
-import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
+import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectiveFunction;
 
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * <i>Branch-and-bound</i> "FIFO" solver.
+ */
 public class BnBFIFOSolver extends BnBDFSSolver {
-   // private Boolean levelUp;
-
-    @Override
-    public InstanceExecResult solveExecutive(Instant start, ObjectFunction objFn, Instance instances) {
-
-        //this.allNodes.add(rootBnBProblem);
-
-        Scheduler sch = new Scheduler();
-        while (this.openBnBProblems.size() > 0) {
-            if (checkTimeout(start))    // TODO sostituibile con break?
-                return new InstanceExecResult(this.incumbent, this.globLB);
-            BnBProblem p = this.openBnBProblems.get(0);
-            this.openBnBProblems.remove(p);
-            // il nodo potrebbe già essere stato visitato se sto risalendo
-
-            if (!p.isVisited()) {
-                p = this.examineProblem(p, objFn);
-                //System.out.println(p.getStatus());
-                //this.recordForStats(p);
-                if(p.isOptimalByLB())
-                    return new InstanceExecResult(this.incumbent, this.globLB);
-                if (!sch.scheduleInProblemListByFullInitSchedule(p.getFullInitialSchedule(), this.potentiallyExpandableInCurrentLevel))
-                    this.potentiallyExpandableInCurrentLevel.add(p);
-            }
-           // this.recordForStats(p);
-            if(!p.isClosed()){
-            List<BnBProblem> sub = this.generateSubProblems(p, start);
-            if (sub != null)
-                this.openBnBProblems.addAll(sub);}
-            //this.allNodes.addAll(sub);
-           // this.updateStatuses(p.getStatus());
-        }
-        return new InstanceExecResult(this.incumbent, this.globLB);
-    }
-/*
-    private BnBProblem generateNextProblemFIFO(BnBProblem p) {
-        Scheduler sch = new Scheduler();
-        int skip = 0;
-        this.jobList.sort(Comparator.comparing(Job::getId));
-        BnBProblem next = null;
-        Boolean goBack = null;
-        // se non è una foglia ho ancora possibilità di scendere, e vedo se posso farlo:
-        if (!isLeaf(p)) {
-            // se il problema è EXPANDED vuol dire che già l'ho visitato,
-            // e quindi posso ancora provare eventualmente a scendere,
-            // mentre se già so che è FATHOMED è inutile che ci provo, devo per forza salire
-            if (p.getStatus() == ProblemStatus.EXPANDED) {
-                // genero la sequenza
-                Schedule s = new Schedule();
-                for (Job j : this.jobList) {
-                    this.levelUp = null;
-                    if (!p.getFullInitialSchedule().contains(j)) {
-                        s.getItems().removeAll(s.getItems());
-                        s.getItems().addAll(p.getFullInitialSchedule().getItems());
-                        next = new BnBProblem(s, j);
-                        // se la schedula che ho trovato non è stata ancora esaminata, allora va bene
-                        if (!sch.scheduleInProblemListByFullInitSchedule(next.getFullInitialSchedule(), this.potentiallyExpandable)) {
-                            //  scendo di figlio
-                            this.levelUp = false;
-                            return next;
-                        }
-                    }
-                }
-                // se sono qui vuol dire che NON ESISTONO in questo livello schedule
-                // che non siano già state esaminate,
-                // quindi devo salire di livello
-                this.levelUp = true;
-            }
-            // il problema era non-EXPANDED, quindi non potevo andare più a fondo,
-            // quindi devo salire
-        }
-        // il problema era FOGLIA, quindi non potevo andare più a fondo,
-        // quindi devo salire
-
-        // QUINDI: se sono qui vuol dire che devo per forza salire
-        // vado a vedere nella lista dei visitati, a partire dal più recente a tornare indietro
-        for (int i = this.potentiallyExpandable.size() - 1; i >= 0; i--) {
-            // se è EXPANDED ed è del livello superiore
-            if (this.potentiallyExpandable.get(i).getStatus() == ProblemStatus.EXPANDED
-                    && isSuperiorLevel(this.potentiallyExpandable.get(i), p)) {
-                this.levelUp = true;
-                return this.potentiallyExpandable.get(i);
-            }
-        }
-        // se arrivo qui non ho più nulla da esaminare
-        return null;
-    }
-
-    /**
-     * return true if a is at a superior level wrt b
-     *
-     * @param a
-     * @param b
-     * @return
-     *//*
-    private boolean isSuperiorLevel(BnBProblem a, BnBProblem b) {
-        return a.getFullInitialSchedule().getItems().size() <=
-                b.getFullInitialSchedule().getItems().size() - 1;
-    }
-
-    private boolean isLeaf(BnBProblem p) {
-        return p.getFullInitialSchedule().getItems().size() == this.jobList.size() - 1;
-    }*/
 
     @Override
     public SolverEnum initName() {
         return SolverEnum.BRANCH_AND_BOUND_FIFO;
+    }
+
+    @Override
+    public InstanceExecResult solveExecutive(Instant start, ObjectiveFunction objFn, Instance instances) {
+        Scheduler sch = new Scheduler();
+        while (this.openBnBProblems.size() > 0) {
+            if (checkTimeout(start))
+                return new InstanceExecResult(this.incumbent, this.globLB);
+            BnBProblem p = this.openBnBProblems.get(0);
+            this.openBnBProblems.remove(p);
+            // node could be already visited if we are going up into the branching tree
+            if (!p.isVisited()) {
+                p = this.examineProblem(p, objFn);
+                if (p.isOptimalByLB())
+                    return new InstanceExecResult(this.incumbent, this.globLB);
+                if (!sch.scheduleIsInProblemListByFullInitSchedule(p.getFullInitialSchedule(), this.potentiallyExpandableInCurrentLevel))
+                    this.potentiallyExpandableInCurrentLevel.add(p);
+            }
+            if (!p.isClosed()) {
+                List<BnBProblem> sub = this.generateSubProblems(p, start);
+                if (sub != null)
+                    this.openBnBProblems.addAll(sub);
+            }
+        }
+        return new InstanceExecResult(this.incumbent, this.globLB);
     }
 }

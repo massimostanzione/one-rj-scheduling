@@ -18,9 +18,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class coordinates all the operations directly involved in the executions of the solving
+ * of the 1|r_j|f problem
+ */
 public class ExecutionManager {
     private final List<InstanceExecResult> toExport = new ArrayList<>();
     private final List<InstanceClass> classes = new ArrayList<>();
+    private String name = "";
+    private String outDT = "";
 
     /**
      * The actual solving.
@@ -28,30 +34,39 @@ public class ExecutionManager {
      * @param problem
      */
     public void solve(OneRjProblem problem) {
-        String name = problem.getName() == null ? "" : "-" + problem.getName() + "-";
+        this.name = problem.getName() == null ? "" : "-" + problem.getName() + "-";
+        this.outDT = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+        this.runSolvers(problem);
+        this.buildStatistics(problem);
+    }
+
+    /**
+     * For each instance, and for each solver, solve the 1|rj|f problem
+     *
+     * @param problem the 1|r_j|f problem to be solved
+     */
+    private void runSolvers(OneRjProblem problem) {
         for (Instance instance : problem.getInstances()) {
-            List<InstanceExecResult> results = new ArrayList<>();
             List<SolverThread> solverThreads = new ArrayList<>();
             List<Thread> threads = new ArrayList<>();
             System.out.println("=======================================================" +
                     "\nStarting analysis for the instance " + instance.getPath());
             System.out.println("-------------------------------------------------------");
+
+            // Optimal (commercial/AMPL) solvers and BnB "Full" solver are the ones that
+            // use the majority of the execution time, often reaching timeout,
+            // so run them simultaneously in a pool thread
             for (Solver solver : problem.getOptimumSolvers()) {
-                //solver.setPath(instance.getPath());
-                //solver.setObjFunction(problem.getObjectFunction());
                 System.out.println("Solving\n"
                         + "\tProblem:\t1|r_j|" + problem.getObjectFunction().getMathNotation() + "\n"
                         + "\tInstance:\t" + instance.getPath() + "\n"
                         + "\tSolver:\t\t" + solver.initName() + "\n"
                         + "It may take a while, please wait...\n");
-                //instance.getResults().add(solver.solve());
-
                 SolverThread foo = new SolverThread(solver, problem.getObjectFunction(), instance);
                 solverThreads.add(foo);
                 Thread thread = new Thread(foo);
                 threads.add(thread);
                 thread.start();
-
             }
             try {
                 for (Thread thread : threads) {
@@ -60,22 +75,16 @@ public class ExecutionManager {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-            //   InstanceExecResult item = solver.solve(problem.getObjectFunction(), instance);
-
-            for (SolverThread foo : solverThreads) {
-                // SolverThread foo = thread.getClass();
-                InstanceExecResult result = foo.getResult();
-
-                // item.setPath(instance.getPath());
+            for (SolverThread thrClass : solverThreads) {
+                InstanceExecResult result = thrClass.getResult();
                 instance.addResult(result);
                 System.out.println("Solution:\t\t" + instance.getResults().get(instance.getResults().size() - 1).getSolution());
                 System.out.println("Time elapsed:\t" + instance.getResults().get(instance.getResults().size() - 1).getTime() + " ms");
                 System.out.println("-------------------------------------------------------");
             }
-                 for (Solver solver : problem.getRelaxedSolvers()) {
-                //solver.setPath(instance.getPath());
-                //solver.setObjFunction(problem.getObjectFunction());
+
+            // "Relaxed" solvers are (way) less time-requiring, so they can be run sequentially
+            for (Solver solver : problem.getRelaxedSolvers()) {
                 System.out.println("Determining lower bound for the previous problem via preemptive relaxation\n"
                         + "\tProblem:\t1|r_j, pmnt|" + problem.getObjectFunction().getMathNotation() + "\n"
                         + "\tInstance:\t" + instance.getPath() + "\n"
@@ -91,32 +100,79 @@ public class ExecutionManager {
             this.toExport.addAll(instance.getResults());
             System.out.println("Analysis finished for this instance.\nFinal solution:\t" + instance.getBestObtainedSolution()
                     + "\nisOptimal:\t\t" + instance.isOptimal());//+"=======================================================");
-
-
-            //l'instExecResult deve essere aggiunto alla classe di appartenenza
-
-            // quindi anzitutto decifra a quale classe appartiene
-            // la funzione la aggiunge pure alla lista, qualora non ci fosse
+            // identify the instance class which the instances are referring to
             InstanceClass instClass = this.obtainClass(instance.getPath());
             instClass.addInstance(instance);
         }
-        String outDT = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
         CSVExporterPrinter.getSingletonInstance().convertAndExport(this.toExport,
                 "/output/report/report" + name + outDT + "-executions.csv");
+    }
 
-        //  System.out.println(this.classes);
-        // ora che ho raccolto tutte le statistiche
-        // per ogni classe
+    /**
+     * Parse a file name trying to classify it to the proper <code>InstanceClass</code>,
+     * looking for matching with values from <code>InstanceGenerator.Size</code>,
+     * <code>InstanceGenerator.Variance</code>,<code>InstanceGenerator.ReleaseDates</code>.
+     *
+     * @param path the filename to be parsed
+     * @return the class best-matching the instance file classification.
+     */
+    private InstanceClass obtainClass(String path) {
+        // si occupa anche di aggiungere la classe alla lista, qualora non esistesse
+        InstanceClass ret = new InstanceClass();
+        ret.setSize(fetchInstClassAttribute(InstanceGenerator.Size.values(), path));
+        ret.setVariance(fetchInstClassAttribute(InstanceGenerator.Variance.values(), path));
+        ret.setReleaseTimes(fetchInstClassAttribute(InstanceGenerator.ReleaseDates.values(), path));
+        InstanceClass instanceClass = fetchClassIfAlreadyExistent(ret);
+        return instanceClass;
+    }
+
+    /**
+     * For the classification of the instances, check if the file name matches one of the classes-defining parameters
+     *
+     * @param enumeration set of attributes to be matched
+     * @param needle      filename to be parsed
+     * @return name of the class-defining attribute, if found; <code>null</code> elsewhere.
+     */
+    private String fetchInstClassAttribute(Object[] enumeration, String needle) {
+        for (Object val : enumeration) {
+            if (needle.contains(val.toString())) return val.toString();
+        }
+        return null;
+    }
+
+    /**
+     * Find out whether an instance class was already defined in the past executions or not.
+     *
+     * @param instanceClass class to be checked
+     * @return the already defined class, if any; or <code>instanceClass</code> elsewhere.
+     */
+    private InstanceClass fetchClassIfAlreadyExistent(InstanceClass instanceClass) {
+        for (InstanceClass iteratedClass : this.classes) {
+            //NOTICE: equals() was not used, because null values are admissible
+            if (iteratedClass.getSize() == (instanceClass.getSize()) &&
+                    iteratedClass.getVariance() == (instanceClass.getVariance()) &&
+                    iteratedClass.getReleaseTimes() == (instanceClass.getReleaseTimes()))
+                return iteratedClass;
+        }
+        this.classes.add(instanceClass);
+        return instanceClass;
+    }
+
+    /**
+     * Once solvers terminate their execution, compute average statistics over the total of the executions,
+     * defining the performance of all the solvers for this problem.
+     *
+     * @param problem the 1|r_j|f problem to be solved
+     */
+    private void buildStatistics(OneRjProblem problem) {
         List<SolverPerformance> toExport = new ArrayList<>();
         for (InstanceClass instanceClass : this.classes) {
-            // costruisco ciò che mi interessa, ovvero le prestazioni dei solver
             List<Solver> solvers = new ArrayList<>();
             solvers.addAll(problem.getOptimumSolvers());
             solvers.addAll(problem.getRelaxedSolvers());
             for (Solver solver : solvers) {
                 SolverPerformance solverPerf = new SolverPerformance();
                 solverPerf.setSolver(solver.getSolverName());
-                // SETTARE: AVGTIME, AVGERRORS, OPTIMALS_COUNT
                 double avgTime = 0;
                 double avgAbsErr = 0;
                 double avgRelErr = 0;
@@ -133,19 +189,13 @@ public class ExecutionManager {
                             avgRelErr += report.getOptimalOrEstimate() == 0 ? 0 : result.getSolution() / report.getOptimalOrEstimate();
                             nodesCtr += result.getTotalVisitedNodes();
                             for (ProblemStatus status : ProblemStatus.values()) {
-                                //System.out.println(statusesAvg);
-                                // System.out.println();
                                 if (solver instanceof AMPLSolver) {
+                                    // AMPL solvers don't use Branch-and-bound nodes, so counting them is pointless
                                     statusesAvg.put(status, -1.0);
-
                                 } else {
                                     Double present = result.getStatuses().get(status) == null ? 0.0 : result.getStatuses().get(status);
                                     if (statusesAvg.containsKey(status)) {
-                                        //if(result.getStatuses().get(status)!=null)
                                         statusesAvg.put(status, statusesAvg.get(status) + present);
-                                        //else
-                                        //    statusesAvg.put(status, statusesAvg.get(status));
-
                                     } else
                                         statusesAvg.put(status, present);
                                 }
@@ -163,7 +213,6 @@ public class ExecutionManager {
                 solverPerf.setOptimalsPerc(100 * optimalsCount / instanceClass.getInstances().size());
                 solverPerf.setInstancesNo(instanceClass.getInstances().size());
                 for (ProblemStatus status : statusesAvg.keySet()) {
-                    //System.out.println(statusesAvg.get(status));
                     if (!(solver instanceof AMPLSolver)) {
                         statusesAvg.put(status, statusesAvg.get(status) / instanceClass.getInstances().size());
                         nodesCtr += statusesAvg.get(status);
@@ -171,51 +220,15 @@ public class ExecutionManager {
                 }
                 solverPerf.setStatusesAvg(statusesAvg);
                 solverPerf.setTotalVisitedNodes(solver instanceof AMPLSolver ? -1 : nodesCtr / instanceClass.getInstances().size());
-                //System.out.println(statusesAvg);
                 instanceClass.addSolverPerf(solverPerf);
             }
         }
-        // System.out.println(this.classes);
         for (InstanceClass instanceClass : this.classes) {
-            //System.out.println(this.classes.size());
-            //toExport.add(instanceClass.getSize());
             for (SolverPerformance s : instanceClass.getSolversPerfs())
                 toExport.add(s);
         }
         CSVExporterPrinter.getSingletonInstance().convertAndExport(this.classes,
-                "/output/report/report" + name + outDT + ".csv");
+                "/output/report/report" + this.name + this.outDT + ".csv");
         System.out.println("Done.");
-    }
-
-    private String fetchInstClassAttribute(Object[] enumeration, String needle) {
-        for (Object val : enumeration) {
-            if (needle.contains(val.toString())) return val.toString();
-        }
-        return null;
-    }
-
-    private InstanceClass fetchClassIfAlreadyExistent(InstanceClass instanceClass) {
-        for (InstanceClass iteratedClass : this.classes) {
-            //NOTA: di proposito non uso equals()
-            if (
-                    iteratedClass.getSize() == (instanceClass.getSize()) &&
-                            iteratedClass.getVariance() == (instanceClass.getVariance()) &&
-                            iteratedClass.getReleaseTimes() == (instanceClass.getReleaseTimes())
-            ) return iteratedClass;
-        }
-        this.classes.add(instanceClass);
-        return instanceClass;
-    }
-
-    private InstanceClass obtainClass(String path) {
-        // si occupa anche di aggiungere la classe alla lista, qualora non esistesse
-        InstanceClass ret = new InstanceClass();
-        ret.setSize(fetchInstClassAttribute(InstanceGenerator.Size.values(), path));
-        ret.setVariance(fetchInstClassAttribute(InstanceGenerator.Variance.values(), path));
-        ret.setReleaseTimes(fetchInstClassAttribute(InstanceGenerator.ReleaseDates.values(), path));
-
-        InstanceClass instanceClass = fetchClassIfAlreadyExistent(ret);
-        //return instanceClass==null?ret:instanceClass;
-        return instanceClass;
     }
 }

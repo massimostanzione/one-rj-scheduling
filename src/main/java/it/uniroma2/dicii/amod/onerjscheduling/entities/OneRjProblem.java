@@ -1,6 +1,6 @@
 package it.uniroma2.dicii.amod.onerjscheduling.entities;
 
-import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectFunction;
+import it.uniroma2.dicii.amod.onerjscheduling.objectfunctions.ObjectiveFunction;
 import it.uniroma2.dicii.amod.onerjscheduling.solvers.Solver;
 
 import java.io.File;
@@ -11,12 +11,11 @@ import java.util.List;
  * This class models a 1|r_j|f problem, where f is an object function described by <code>objectFunction</code>.
  */
 public class OneRjProblem {
-    private String name;    // optional
-    private ObjectFunction objectFunction;
-    private List<Instance> instances = new ArrayList<>();
-    private List<Solver> optimumSolvers = new ArrayList<>();
-    private List<Solver> relaxedSolvers = new ArrayList<>();
-    //private List<ExecutionReportItem> results = new ArrayList<>();
+    private final List<Instance> instances = new ArrayList<>();
+    private final List<Solver> optimumSolvers = new ArrayList<>();
+    private final List<Solver> relaxedSolvers = new ArrayList<>();
+    private String name;                                        // optional
+    private ObjectiveFunction objectiveFunction;
 
     public String getName() {
         return name;
@@ -26,32 +25,20 @@ public class OneRjProblem {
         this.name = name;
     }
 
-    public ObjectFunction getObjectFunction() {
-        return objectFunction;
+    public ObjectiveFunction getObjectFunction() {
+        return objectiveFunction;
     }
 
-    public void setObjectFunction(ObjectFunction objectFunction) {
-        this.objectFunction = objectFunction;
+    public void setObjectFunction(ObjectiveFunction objectiveFunction) {
+        this.objectiveFunction = objectiveFunction;
     }
 
-       public List<Instance> getInstances() {
-           return instances;
-       }
-
-       public void setInstances(List<Instance> instances) {
-           this.instances = instances;
-       }
-
-    public void addInstance(Instance instance) {
-        this.instances.add(instance);
+    public List<Instance> getInstances() {
+        return instances;
     }
 
     public List<Solver> getOptimumSolvers() {
         return optimumSolvers;
-    }
-
-    public void setOptimumSolvers(List<Solver> optimumSolvers) {
-        this.optimumSolvers = optimumSolvers;
     }
 
     public void addOptimumSolver(Solver optimumSolver) {
@@ -62,31 +49,25 @@ public class OneRjProblem {
         return relaxedSolvers;
     }
 
-    public void setRelaxedSolvers(List<Solver> relaxedSolvers) {
-        this.relaxedSolvers = relaxedSolvers;
-    }
-
     public void addRelaxedSolver(Solver relaxedSolver) {
         this.relaxedSolvers.add(relaxedSolver);
     }
 
-    /*
-        public List<ExecutionReportItem> getResults() {
-            return results;
-        }
-
-        public void setResults(List<ExecutionReportItem> results) {
-            this.results = results;
-        }
-    */
+    /**
+     * Load and parse all the CSV files from a specific folder.
+     *
+     * @param path path of a CSV job containing information of a set of jobs
+     */
     public void loadInstanceDirectory(String path) {
         File folder = new File(path);
         File[] listOfFiles = folder.listFiles();
-
         for (int i = 0; i < listOfFiles.length; i++) {
-            //this.addInstance(listOfFiles[i].toString());
-            if(!listOfFiles[i].isDirectory())
-            this.addInstance(new Instance(listOfFiles[i].toString()));
+            if (!listOfFiles[i].isDirectory())
+                this.addInstance(new Instance(listOfFiles[i].toString()));
         }
+    }
+
+    public void addInstance(Instance instance) {
+        this.instances.add(instance);
     }
 }

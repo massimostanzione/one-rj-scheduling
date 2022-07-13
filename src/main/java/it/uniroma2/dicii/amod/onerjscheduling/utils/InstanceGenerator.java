@@ -10,10 +10,10 @@ import java.util.Random;
 import static it.uniroma2.dicii.amod.onerjscheduling.utils.InstanceGenerator.Size.SIZE_MEDIUM;
 import static it.uniroma2.dicii.amod.onerjscheduling.utils.InstanceGenerator.Variance.VARIANCE_LOW;
 
+/**
+ * A tool that generates a set of random job instances, based on the parameters described by the inner enums.
+ */
 public class InstanceGenerator {
-    private final static int AVG = 20;
-    private final static double VARIANCE_SMALL_VAL = 1;
-    private final static int VARIANCE_HIGH_VAL = 15;
     private final static int INSTANCE_NO = 20;
 
     public static void main(String[] args) {
@@ -44,58 +44,43 @@ public class InstanceGenerator {
                     break;
             }
             for (Variance v : Variance.values()) {
-               // double var = v == VARIANCE_SMALL ? VARIANCE_SMALL_VAL : VARIANCE_HIGH_VAL;
-                int var=v== VARIANCE_LOW ?20:150;
+                int var = v == VARIANCE_LOW ? 20 : 150;
                 for (ReleaseDates relDates : ReleaseDates.values()) {
-                    // studio sui tempi di rilascio solo su classe media
+                    // specific for the r_j study
                     if ((s != SIZE_MEDIUM && (relDates != ReleaseDates.RJ_RAND))
-                    ||
-                            (s==SIZE_MEDIUM && relDates!=ReleaseDates.RJ_RAND && v== VARIANCE_LOW)) continue;
+                            ||
+                            (s == SIZE_MEDIUM && relDates != ReleaseDates.RJ_RAND && v == VARIANCE_LOW)) continue;
 
                     for (int i = 1; i <= INSTANCE_NO; i++) {
                         List<Job> jobList = new ArrayList<>();
                         int nJobs = prngN.nextInt(start, end + 1);
-                        //System.out.println("\n" + s + " " + v);
-                        //int rjAvg = Math.max(prngRjAvg.nextInt(0, 50+1), 1);
-
-                        int pjAvg = prngPjAvg.nextInt(5, 300+1);
-
-
-
+                        int pjAvg = prngPjAvg.nextInt(5, 300 + 1);
                         for (int j = 1; j <= nJobs; j++) {
-
-                            // genera righe per ogni istanza
-
-                            //int pj = Math.max((int) prngPj.nextGaussian(pjAvg, var), 1);
                             int pj;
-do {
-    pj = prngPj.nextInt(pjAvg - var, pjAvg + var);
-}while(pj<=0);
+                            do {
+                                pj = prngPj.nextInt(pjAvg - var, pjAvg + var);
+                            } while (pj <= 0);
                             int rj = 0;
                             switch (relDates) {
                                 case RJ_RAND:
-                                    rj = prngRj.nextInt(0,100+1);
+                                    rj = prngRj.nextInt(0, 100 + 1);
                                     break;
                                 case RJ_SMALL:
-                                    rj=prngRj.nextInt(0,5+1);
+                                    rj = prngRj.nextInt(0, 5 + 1);
                                     break;
                                 case RJ_PROPORTIONAL:
-                                    rj= (int) (pj*.8);
+                                    rj = (int) (pj * .8);
                                     break;
                             }
-                            // System.out.println(j + "\t" + rj + "\t" + pj);
                             Job job = new Job(j, rj, pj);
                             jobList.add(job);
                         }
                         CSVExporterPrinter.getSingletonInstance().convertAndExport(jobList, path + s + "#" + v + "#" + relDates + "#" + i + ".csv");
                     }
                 }
-
             }
         }
-
         System.out.println("Done.");
-
     }
 
     public enum Size {SIZE_SMALL, SIZE_MEDIUM, SIZE_LARGE}
