@@ -42,7 +42,7 @@ public class OneRjScheduling {
         OneRjProblem problem = new OneRjProblem();
 
         // 1. Problem name (not mandatory)
-        problem.setName("MULTITHREAD-studioRj-small");
+        problem.setName("demo");
 
         // 2. Object function
         problem.setObjectFunction(new ObjFunctionFactory().createObjFunction(SUM_COMPLETION_TIMES));
